@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesla 中国产品介绍与竞品分析 · Magazine Deck</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ============ 主题色(默认:🖋 墨水经典) ============
+       切换主题:从 references/themes.md 复制对应的 :root 块
+       整体替换这几行(--ink / --ink-rgb / --paper / --paper-rgb)
+       其他地方散落的 rgba() 都走 var(--ink-rgb) / var(--paper-rgb),无需逐处改 */
+    --ink:#0a1f3d;
+    --ink-rgb:10,31,61;
+    --paper:#f1f3f5;
+    --paper-rgb:241,243,245;
+    --paper-tint:#e4e8ec;
+    --ink-tint:#152a4a;
+
+    /* ============ 字体(跨主题固定) ============ */
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --serif-en:"Playfair Display","Source Serif 4",Georgia,serif;
+    --serif-body-en:"Source Serif 4",Georgia,serif;
+    --serif-zh:"Noto Serif SC",source-han-serif-sc,serif;
+    --sans-zh:"Noto Sans SC",source-han-sans-sc,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+  /* ============ WebGL 双背景 ============ */
+  canvas.bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;transition:opacity 1.2s ease}
+  canvas#bg-light{opacity:0}
+  canvas#bg-dark{opacity:1}
+  body.light-bg canvas#bg-light{opacity:1}
+  body.light-bg canvas#bg-dark{opacity:0}
+
+  /* ============ Deck 容器 + 翻页 ============ */
+  /* width: NSLIDES * 100vw，会在 JS 里动态矫正 */
+  #deck{position:fixed;inset:0;width:10000vw;height:100vh;display:flex;flex-wrap:nowrap;transition:transform .9s cubic-bezier(.77,0,.175,1);z-index:10;will-change:transform}
+  .slide{width:100vw;height:100vh;flex:0 0 100vw;position:relative;padding:6vh 6vw 10vh 6vw;display:flex;flex-direction:column;overflow:hidden}
+  .slide.light{color:var(--ink);background:var(--paper)}
+  .slide.dark{color:var(--paper);background:var(--ink)}
+
+  /* 默认页：遮罩较厚，保证文字可读 */
+  .slide::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;transition:background .7s ease}
+  .slide.light::before{background:rgba(var(--paper-rgb),.78);backdrop-filter:blur(3px)}
+  .slide.dark::before{background:rgba(var(--ink-rgb),.78);backdrop-filter:blur(3px)}
+  /* Hero 页：遮罩大幅降低，让 WebGL 背景明显透出 */
+  .slide.hero.light::before{background:rgba(var(--paper-rgb),.16);backdrop-filter:none}
+  .slide.hero.dark::before{background:rgba(var(--ink-rgb),.12);backdrop-filter:none}
+  /* Hero 页顶底微弱渐隐，保证 chrome/foot 区域可读 */
+  .slide.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+  .slide.hero.light::after{background:linear-gradient(180deg,rgba(var(--paper-rgb),.28) 0%,rgba(var(--paper-rgb),0) 14%,rgba(var(--paper-rgb),0) 86%,rgba(var(--paper-rgb),.28) 100%)}
+  .slide.hero.dark::after{background:linear-gradient(180deg,rgba(var(--ink-rgb),.32) 0%,rgba(var(--ink-rgb),0) 14%,rgba(var(--ink-rgb),0) 86%,rgba(var(--ink-rgb),.32) 100%)}
+
+  /* ============ Magazine chrome：顶部 meta + 底部 foot ============ */
+  .chrome{display:flex;justify-content:space-between;align-items:flex-start;font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+  .chrome .left,.chrome .right{display:flex;gap:2.4em;align-items:center}
+  .chrome .sep{width:40px;height:1px;background:currentColor;opacity:.4}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+  .foot .title{font-family:var(--serif-zh);font-weight:400;letter-spacing:.05em;text-transform:none;opacity:.75;font-size:13px}
+
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;padding:6px 14px;border:1px solid currentColor;opacity:.85}
+  .rule{width:100%;height:1px;background:currentColor;opacity:.25;margin:3vh 0}
+  .rule.v{width:1px;height:100%;margin:0}
+
+  /* ============ 字体规则 ============
+     · 衬线（Noto Serif SC / Playfair）：大标题、重点金句、数字
+     · 非衬线（Noto Sans SC）：正文描述、body、补充说明
+     · 等宽（IBM Plex Mono）：kicker、meta 小标签、foot 右侧
+  */
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-bottom:2.6vh}
+  .display{font-family:var(--serif-en);font-weight:700;font-size:11vw;line-height:.92;letter-spacing:-.025em}
+  .display-zh{font-family:var(--serif-zh);font-weight:700;font-size:7.8vw;line-height:1.04;letter-spacing:-.005em}
+  .h1-zh{font-family:var(--serif-zh);font-weight:700;font-size:4.6vw;line-height:1.12;letter-spacing:-.005em}
+  .h2-zh{font-family:var(--serif-zh);font-weight:600;font-size:3.2vw;line-height:1.2;letter-spacing:0}
+  .h3-zh{font-family:var(--serif-zh);font-weight:500;font-size:1.9vw;line-height:1.35}
+  .body-zh{font-family:var(--sans-zh);font-weight:400;font-size:max(15px,1.22vw);line-height:1.75;opacity:.82;letter-spacing:.01em}
+  .body-serif{font-family:var(--serif-zh);font-weight:400;font-size:max(15px,1.3vw);line-height:1.65;opacity:.88}
+  .lead{font-family:var(--serif-zh);font-weight:400;font-size:1.9vw;line-height:1.4;opacity:.85}
+  .meta{font-family:var(--mono);font-size:max(11px,.88vw);letter-spacing:.16em;text-transform:uppercase;opacity:.6}
+  .big-num{font-family:var(--serif-en);font-weight:800;font-size:10vw;line-height:.85;letter-spacing:-.03em;font-feature-settings:"tnum"}
+  .mid-num{font-family:var(--serif-en);font-weight:700;font-size:5.5vw;line-height:.88;letter-spacing:-.02em;font-feature-settings:"tnum"}
+  .ghost{font-family:var(--serif-en);font-weight:900;font-size:34vw;line-height:.8;opacity:.06;letter-spacing:-.04em;position:absolute;font-feature-settings:"tnum"}
+  em{font-style:italic;font-family:var(--serif-en)}
+  .en{font-family:var(--serif-en);font-style:italic;font-weight:500}
+
+  /* ============ 布局工具 ============ */
+  .col{display:flex;flex-direction:column;gap:2.4vh}
+  .row{display:flex;align-items:center;gap:3vw}
+  .grid-6{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4vw 6vw;flex:1;align-content:center;padding:2vh 0}
+  .grid-9{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3vh 4vw;flex:1;align-content:center}
+  .grid-4{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:4vh 6vw;flex:1;align-content:center}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:4vw;flex:1;align-content:center}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:4vw;flex:1;align-items:center}
+  .split-55{display:grid;grid-template-columns:55fr 45fr;gap:5vw;flex:1;align-items:stretch}
+  .fill{flex:1}
+  .center{align-items:center;justify-content:center;text-align:center}
+  .bottom-left{position:absolute;left:6vw;bottom:9vh;max-width:50vw}
+  .bottom-right{position:absolute;right:6vw;bottom:9vh;max-width:50vw;text-align:right}
+  .top-right{position:absolute;right:6vw;top:6vh;text-align:right}
+
+  /* ============ Stat（数字矩阵） ============ */
+  .stat{display:flex;flex-direction:column;gap:1vh;align-items:flex-start}
+  .stat .n{font-family:var(--serif-en);font-weight:800;font-size:8vw;line-height:.88;letter-spacing:-.03em;font-feature-settings:"tnum"}
+  .stat .l{font-family:var(--sans-zh);font-size:max(13px,1.05vw);opacity:.7;margin-top:1vh;font-weight:400;line-height:1.5}
+  .stat .m{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:.5;margin-bottom:.2vh}
+
+  /* ============ Callout（引用框） ============ */
+  .callout{padding:3vh 2.4vw;border-left:3px solid currentColor;position:relative;font-family:var(--serif-zh);font-size:max(15px,1.2vw);line-height:1.55;opacity:.92}
+  .slide.light .callout{background:rgba(var(--ink-rgb),.05)}
+  .slide.dark .callout{background:rgba(var(--paper-rgb),.06)}
+  .callout .cite{display:block;margin-top:1.6vh;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+  .callout .q-big{font-family:var(--serif-zh);font-weight:600;font-size:max(17px,1.6vw);line-height:1.42}
+
+  /* ============ Platform（平台卡） ============ */
+  .plat{display:flex;flex-direction:column;justify-content:flex-end;padding:2vh 0;border-top:1px solid currentColor;border-color:rgba(127,127,127,.35)}
+  .plat .name{font-family:var(--serif-zh);font-weight:700;font-size:1.8vw;margin-bottom:.6vh}
+  .plat .nb{font-family:var(--serif-en);font-weight:700;font-size:3.2vw;letter-spacing:-.02em;line-height:1;font-feature-settings:"tnum"}
+  .plat .sub{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;margin-top:.6vh}
+  .plat .fill{font-family:var(--sans-zh);font-weight:300;font-size:2.4vw;opacity:.28;letter-spacing:-.01em;line-height:1}
+
+  /* ============ Rowline（表格行） ============ */
+  .rowline{display:grid;grid-template-columns:1fr 2fr 1fr;gap:2vw;padding:2.2vh 0;border-top:1px solid currentColor;align-items:center;border-color:rgba(127,127,127,.25)}
+  .rowline:last-child{border-bottom:1px solid currentColor;border-color:rgba(127,127,127,.25)}
+  .rowline .k{font-family:var(--serif-zh);font-weight:700;font-size:1.7vw}
+  .rowline .v{font-family:var(--sans-zh);font-weight:400;font-size:max(14px,1.2vw);opacity:.85;line-height:1.55}
+  .rowline .m{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;justify-self:end}
+
+  /* ============ Pillar（支柱卡片） ============ */
+  .pillar{display:flex;flex-direction:column;gap:1.8vh}
+  .pillar .ic{font-family:var(--serif-en);font-style:italic;font-size:2.6vw;opacity:.45;font-weight:400}
+  .pillar .ic svg{width:2.8vw;height:2.8vw;stroke-width:1.2;opacity:.7}
+  .pillar .t{font-family:var(--serif-zh);font-weight:700;font-size:2.4vw;line-height:1.1}
+  .pillar .d{font-family:var(--sans-zh);font-weight:400;font-size:max(14px,1.1vw);opacity:.76;line-height:1.6}
+
+  /* ============ Signature / Highlight ============ */
+  .sign{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:2vw;opacity:.7}
+  .hi{position:relative;display:inline}
+  .slide.dark .hi::after{content:"";position:absolute;left:-.1em;right:-.1em;bottom:-.05em;height:.28em;background:rgba(var(--paper-rgb),.15);z-index:-1}
+  .slide.light .hi::after{content:"";position:absolute;left:-.1em;right:-.1em;bottom:-.05em;height:.28em;background:rgba(var(--ink-rgb),.08);z-index:-1}
+
+  /* ============ Icons（Lucide via CDN） ============ */
+  .ico{width:1em;height:1em;display:inline-block;vertical-align:-.12em;stroke:currentColor;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  .ico-lg,.ico-md,.ico-sm{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+  .ico-lg{width:2.6vw;height:2.6vw;stroke-width:1.2;display:inline-block}
+  .ico-md{width:1.8vw;height:1.8vw;stroke-width:1.3;display:inline-block;vertical-align:-.4em}
+  .ico-sm{width:1.1vw;height:1.1vw;stroke-width:1.4;display:inline-block;vertical-align:-.15em;opacity:.7}
+
+  /* ============ 图片占位（虚线框，提示设计师位置） ============ */
+  .img-slot{border:1.5px dashed rgba(127,127,127,.4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1vh;padding:2vh 2vw;font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;opacity:.55;position:relative;aspect-ratio:16/9;width:100%;max-height:56vh;margin-inline:auto;box-sizing:border-box}
+  .img-slot::before{content:"";position:absolute;inset:8px;border:1px solid currentColor;opacity:.2}
+  .img-slot .plus{font-size:2vw;font-weight:300;opacity:.5;letter-spacing:0}
+  .img-slot .label{position:relative;z-index:2;text-align:center}
+  .img-slot.r-4x3{aspect-ratio:4/3}
+  .img-slot.r-3x2{aspect-ratio:3/2}
+  .img-slot.r-1x1{aspect-ratio:1/1}
+
+  /* ============ 图片实填框（关键：固定高度 + 只裁底部） ============
+     重要约束：高度用内联 height:Nvh 精确控制，不要用 aspect-ratio（会撑破布局）
+     object-position:top center 保证严禁裁剪顶部和左右，只裁剪底部
+  */
+  .frame-img{overflow:hidden;position:relative;background:rgba(0,0,0,.04);box-sizing:border-box;width:100%;border-radius:4px}
+  .slide.dark .frame-img{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12)}
+  .frame-img > img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .frame-img.fit-contain > img{object-fit:contain;object-position:center center}
+  .frame-img.r-16x9{aspect-ratio:16/9;max-height:64vh}
+  .frame-img.r-16x10{aspect-ratio:16/10;max-height:56vh}
+  .frame-img.r-4x3{aspect-ratio:4/3;max-height:56vh}
+  .frame-img.r-3x2{aspect-ratio:3/2;max-height:46vh}
+  .frame-img.r-3x4{aspect-ratio:3/4;max-height:60vh}
+  .frame-img.r-1x1{aspect-ratio:1/1;max-height:50vh}
+  .frame-img.h-16{height:16vh}
+  .frame-img.h-18{height:18vh}
+  .frame-img.h-22{height:22vh}
+  .frame-img.h-26{height:26vh}
+  .frame-img.h-28{height:28vh}
+  .frame-cap{display:flex;justify-content:space-between;align-items:baseline;gap:1vw;margin-top:.8vh;font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:.72}
+  .frame-cap .pf{font-family:var(--serif-zh);font-weight:600;font-size:max(13px,1vw);letter-spacing:.04em;text-transform:none;opacity:.94}
+  .frame-cap .nb{font-family:var(--serif-en);font-style:italic;font-size:max(15px,1.2vw);letter-spacing:.02em;text-transform:none;opacity:.88}
+  .frame-cap .idx{font-family:var(--mono);opacity:.5}
+  figure.tile{display:flex;flex-direction:column;margin:0;min-width:0}
+  figure.tile > .frame-img{flex:0 0 auto}
+
+  /* ============ 导航 ============ */
+  #nav{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);z-index:30;display:flex;gap:10px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  #nav .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s ease;border:0;padding:0}
+  #nav .dot:hover{background:rgba(255,255,255,.5);transform:scale(1.15)}
+  #nav .dot.active{background:rgba(255,255,255,.95);width:22px;border-radius:999px}
+  body.light-bg #nav{background:rgba(255,255,255,.25)}
+  body.light-bg #nav .dot{background:rgba(var(--ink-rgb),.25)}
+  body.light-bg #nav .dot.active{background:rgba(var(--ink-rgb),.9)}
+  #hint{position:fixed;bottom:3vh;right:3vw;z-index:30;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.4;mix-blend-mode:difference;color:#aaa}
+
+  /* ============================================================
+     ============ LAYOUTS API · 面向 agent 的类（v2）============
+     所有 layouts.md 中的骨架都基于下面这套命名。
+     如果你在 layouts.md 里看到某个类，它必须在下面有定义。
+     ============================================================ */
+
+  /* ---------- .frame：每页主内容容器 ---------- */
+  .frame{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  /* 当 .frame 同时加了 grid 类时，grid 的 display:grid 覆盖 flex */
+  .frame.grid-2-7-5,
+  .frame.grid-2-6-6,
+  .frame.grid-2-8-4,
+  .frame.grid-3-3,
+  .frame.grid-6{display:grid}
+
+  /* ---------- 标题层级（API 名称，衬线为主） ---------- */
+  .h-hero{
+    font-family:var(--serif-zh);
+    font-weight:900;
+    font-size:10vw;
+    line-height:.96;
+    letter-spacing:-.02em;
+  }
+  .h-xl{
+    font-family:var(--serif-zh);
+    font-weight:700;
+    font-size:6.2vw;
+    line-height:1.08;
+    letter-spacing:-.01em;
+  }
+  .h-sub{
+    font-family:var(--serif-zh);
+    font-weight:500;
+    font-size:3.1vw;
+    line-height:1.25;
+    letter-spacing:0;
+    opacity:.7;
+  }
+  .h-md{
+    font-family:var(--serif-zh);
+    font-weight:600;
+    font-size:2.3vw;
+    line-height:1.3;
+  }
+  /* 英文标题专用（Playfair 衬线） */
+  .h-hero-en,.h-xl-en{font-family:var(--serif-en);letter-spacing:-.025em}
+
+  /* ---------- lead 引语 ---------- */
+  .lead{
+    font-family:var(--serif-zh);
+    font-weight:400;
+    font-size:1.75vw;
+    line-height:1.5;
+    opacity:.86;
+  }
+
+  /* ---------- meta-row 底部元数据 ---------- */
+  .meta-row{
+    display:flex;
+    gap:1.2em;
+    align-items:baseline;
+    flex-wrap:wrap;
+    font-family:var(--mono);
+    font-size:max(12px,.92vw);
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+
+  /* ---------- stat-card（数据大字报用） ---------- */
+  .stat-card{
+    display:flex;
+    flex-direction:column;
+    gap:.8vh;
+    align-items:flex-start;
+    padding-top:1.6vh;
+    border-top:1px solid currentColor;
+    border-color:rgba(127,127,127,.3);
+  }
+  .stat-card .stat-label{
+    font-family:var(--mono);
+    font-size:max(10px,.78vw);
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    opacity:.55;
+  }
+  .stat-card .stat-nb{
+    font-family:var(--serif-en);
+    font-weight:800;
+    font-size:5.8vw;
+    line-height:.9;
+    letter-spacing:-.03em;
+    font-feature-settings:"tnum";
+    margin-top:.4vh;
+  }
+  .stat-card .stat-nb .stat-unit{
+    font-family:var(--serif-zh);
+    font-weight:500;
+    font-size:.38em;
+    letter-spacing:0;
+    opacity:.72;
+    margin-left:.14em;
+  }
+  .stat-card .stat-note{
+    font-family:var(--sans-zh);
+    font-weight:400;
+    font-size:max(13px,1.05vw);
+    line-height:1.5;
+    opacity:.72;
+    margin-top:.6vh;
+  }
+  /* 当 stat-card 用于 grid-4（2x2），数字适度放大；若页面有标题+引文在上方，可内联 style 覆盖为更小值 */
+  .grid-4 .stat-card .stat-nb{font-size:5vw}
+  /* 当只有 3 个，字也可以稍大 */
+  .grid-3 .stat-card .stat-nb{font-size:6.8vw}
+
+  /* ---------- pipeline（流水线） ---------- */
+  .pipeline-section{
+    margin-top:4.4vh;
+    padding-top:2.8vh;
+    border-top:1px dashed rgba(127,127,127,.32);
+  }
+  .pipeline-section:first-of-type{
+    border-top:0;
+    padding-top:0;
+    margin-top:3vh;
+  }
+  .pipeline-label{
+    font-family:var(--mono);
+    font-size:max(11px,.85vw);
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    opacity:.62;
+    margin-bottom:2.2vh;
+  }
+  .pipeline{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:1.2vw;
+  }
+  .pipeline[data-cols="3"]{grid-template-columns:repeat(3,1fr)}
+  .pipeline[data-cols="4"]{grid-template-columns:repeat(4,1fr)}
+  .pipeline[data-cols="6"]{grid-template-columns:repeat(6,1fr)}
+  .step{
+    display:flex;
+    flex-direction:column;
+    gap:.8vh;
+    padding-top:1.4vh;
+    border-top:1px solid currentColor;
+    border-color:rgba(127,127,127,.35);
+  }
+  .step-nb{
+    font-family:var(--serif-en);
+    font-style:italic;
+    font-weight:500;
+    font-size:1.15vw;
+    opacity:.45;
+  }
+  .step-title{
+    font-family:var(--sans-zh);
+    font-weight:700;
+    font-size:1.55vw;
+    letter-spacing:.01em;
+    line-height:1.2;
+  }
+  .step-desc{
+    font-family:var(--sans-zh);
+    font-weight:400;
+    font-size:max(12px,.95vw);
+    line-height:1.45;
+    opacity:.72;
+  }
+
+  /* ---------- 网格（layouts.md 所用） ---------- */
+  /* 这些类独立挂到任何容器上都能生效，不依赖 .frame 复合选择器 */
+  .grid-2-7-5{display:grid;grid-template-columns:7fr 5fr;gap:3vw 4vh;align-items:start}
+  .grid-2-6-6{display:grid;grid-template-columns:1fr 1fr;gap:3vw 4vh;align-items:start}
+  .grid-2-8-4{display:grid;grid-template-columns:8fr 4fr;gap:3vw 4vh;align-items:start}
+  .grid-3-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-auto-rows:minmax(0,1fr);
+    gap:2.4vh 2vw;
+  }
+  /* grid-6 已在旧样式里定义为 3x2，这里仅补 align */
+
+  /* ---------- 图片 frame-img（layouts.md 主命名） ---------- */
+  /* 在旧样式里已定义，这里补 img-cap 命名别名与增强 */
+  figure.frame-img{margin:0;display:flex;flex-direction:column;min-width:0}
+  .img-cap{
+    display:block;
+    margin-top:.8vh;
+    font-family:var(--mono);
+    font-size:max(10px,.8vw);
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+  /* callout src 命名别名 */
+  .callout-src{
+    display:block;
+    margin-top:1.6vh;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+
+  /* ---------- chrome & foot 补位（layouts.md 简单写法） ---------- */
+  .chrome{font-family:var(--mono);font-size:max(11px,.78vw);letter-spacing:.2em;text-transform:uppercase;opacity:.62}
+  .foot{font-family:var(--mono);font-size:max(11px,.78vw);letter-spacing:.18em;text-transform:uppercase;opacity:.5}
+
+  /* ============ 动效系统(Motion One 驱动) ============
+     所有 [data-anim] 元素默认隐藏,进入页面时由 JS 逐个揭示。
+     - cascade(默认):按 DOM 顺序 stagger 120ms 淡入 + y:16→0
+     - hero(hero 页自动):慢一点的 stagger 180ms
+     - quote(含 [data-anim="line"]):逐行 600ms 淡入
+     - directional(含 [data-anim="left|right"]):左→分隔线→右
+     - pipeline(data-animate="pipeline"):Space/→ 手动推进
+     Motion One 没加载成功时(CDN 断 + 本地丢),所有 [data-anim] 会兜底显示。
+  */
+  [data-anim]{opacity:1}
+  body.motion-ready [data-anim]{opacity:0}
+  body.motion-ready [data-anim="left"]{transform:translateX(-24px)}
+  body.motion-ready [data-anim="right"]{transform:translateX(24px)}
+  body.motion-ready [data-anim="line"]{opacity:0;transform:translateY(10px)}
+  body.motion-ready [data-animate="pipeline"] [data-anim]{opacity:.15}
+
+  /* ---------- 响应式降级 ---------- */
+  @media (max-width:900px){
+    .display{font-size:16vw}
+    .display-zh{font-size:12vw}
+    .h1-zh{font-size:7vw}
+    .h-hero{font-size:14vw}
+    .h-xl{font-size:9vw}
+    .pipeline{grid-template-columns:repeat(2,1fr)}
+    .grid-2-7-5,.grid-2-6-6,.grid-2-8-4{grid-template-columns:1fr}
+  }
+  .slide .body-zh{max-width:62vw}
+  .slide .callout{border-radius:4px}
+  .slide figure.frame-img{border:1px solid rgba(127,127,127,.18)}
+  .slide .grid-3-3 .step{min-height:0}
+  @media (max-width:900px){
+    .slide{padding:5vh 6vw 9vh 6vw}
+    .lead{font-size:4.6vw}
+    .h-md{font-size:6vw}
+    .body-zh{font-size:3.6vw;max-width:100%}
+    .stat-card .stat-nb{font-size:12vw}
+    .grid-3,.grid-4,.grid-6,.grid-3-3{grid-template-columns:1fr;grid-auto-rows:auto;gap:2vh}
+    .frame-img{max-height:34vh}
+  }
+
+</style>
+</head>
+<body>
+
+<canvas id="bg-dark" class="bg"></canvas>
+<canvas id="bg-light" class="bg"></canvas>
+<div id="hint">← → 翻页 · ESC 索引</div>
+
+<div id="deck">
+
+<!-- ============================================================
+     SLIDES 插入区 · 在此处填充所有 slide section 页面
+     每页模板参考 references/page-patterns.md
+     页面组件参考 references/components.md
+     ============================================================ -->
+
+<section class="slide hero dark" data-theme="dark">
+  <div class="chrome"><span>Vol. 01 · China EV</span><span>TESLA PRODUCT DOSSIER</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center;gap:4vw">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>2026 · 中国市场视角</div>
+      <h1 class="h-hero" data-anim style="font-size:8.8vw">Tesla<br>再校准</h1>
+      <p class="lead" data-anim style="max-width:48vw">从 Model 3 / Y 的产品力，到中国新能源车的局部反攻：这是一份面向商业判断的产品介绍、竞争分析与竞品对比。</p>
+      <div class="meta-row" data-anim><span>MODEL 3</span><span>MODEL Y</span><span>CHINA BENCHMARK</span></div>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim style="max-height:58vh">
+      <img src="images/01-cover-china-ev-night.svg" alt="China EV city visual">
+    </figure>
+  </div>
+  <div class="foot"><span class="title">Tesla 产品介绍与竞品分析</span><span>01 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="quote">
+  <div class="chrome"><span>Opening Thesis</span><span>MARKET LOGIC</span></div>
+  <div class="frame center">
+    <div class="kicker" data-anim>核心判断</div>
+    <h2 class="h-xl" style="max-width:82vw">
+      <span data-anim="line" style="display:block">Tesla 仍是标杆，</span>
+      <span data-anim="line" style="display:block">但中国市场已经不再只问</span>
+      <span data-anim="line" style="display:block">谁把电动车做对。</span>
+    </h2>
+    <p class="lead" data-anim style="max-width:68vw;margin-top:4vh">新的问题是：谁能把车、手机、补能、智能驾驶、服务和价格一起卷动。</p>
+  </div>
+  <div class="foot"><span class="title">问题定义</span><span>02 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Context</span><span>GLOBAL SCALE</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>规模不是护城河本身，但它决定试错速度</div>
+    <h2 class="h-xl" data-anim style="font-size:5.6vw;max-width:78vw">Tesla 的底盘仍然是全球级效率机器。</h2>
+    <div class="grid-4" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">2025 DELIVERIES</span><span class="stat-nb">1.636<span class="stat-unit">M</span></span><span class="stat-note">全年交付约 163.6 万辆，仍处在全球新能源车第一梯队。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">MODEL 3 / Y</span><span class="stat-nb">1.585<span class="stat-unit">M</span></span><span class="stat-note">主力车型贡献绝大多数交付，产品组合高度集中。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">Q1 2026</span><span class="stat-nb">358<span class="stat-unit">K</span></span><span class="stat-note">季度交付 35.8 万辆，需求波动开始更显性。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">ENERGY STORAGE 2025</span><span class="stat-nb">46.7<span class="stat-unit">GWh</span></span><span class="stat-note">能源业务成为第二增长曲线，不只是造车叙事。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">官方披露：2025 全年与 2026 Q1</span><span>03 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>China Variables</span><span>WHAT CHANGED</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>中国市场的比较维度变厚了</div>
+    <h2 class="h-xl" data-anim style="max-width:74vw">产品力正在从单点参数，变成一整套使用体验。</h2>
+    <div class="pipeline-section" data-anim>
+      <div class="pipeline-label">FIVE VARIABLES</div>
+      <div class="pipeline" data-cols="5">
+        <div class="step" data-anim><span class="step-nb">01</span><span class="step-title">价格带</span><span class="step-desc">竞品用更密的配置梯度压缩 Tesla 的溢价空间。</span></div>
+        <div class="step" data-anim><span class="step-nb">02</span><span class="step-title">补能</span><span class="step-desc">超充网络仍强，但 800V 快充叙事正在夺取注意力。</span></div>
+        <div class="step" data-anim><span class="step-nb">03</span><span class="step-title">座舱</span><span class="step-desc">本土生态把手机、车机、家居服务连成闭环。</span></div>
+        <div class="step" data-anim><span class="step-nb">04</span><span class="step-title">智驾</span><span class="step-desc">用户开始用本地城市体验而不是全球愿景做判断。</span></div>
+        <div class="step" data-anim><span class="step-nb">05</span><span class="step-title">渠道</span><span class="step-desc">直营效率对上强门店、强服务、强社群的组合拳。</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">中国市场变量</span><span>04 / 36</span></div>
+</section>
+
+<section class="slide hero light" data-theme="light">
+  <div class="chrome"><span>Product Line</span><span>MODEL 3 / MODEL Y</span></div>
+  <div class="frame grid-2-6-6" style="align-items:center">
+    <div class="col" style="gap:2.8vh">
+      <div class="kicker" data-anim>主力不是完整家族，而是两张王牌</div>
+      <h2 class="h-xl" data-anim>Model 3 负责效率轿车，Model Y 负责家庭 SUV。</h2>
+      <p class="lead" data-anim>在中国语境里，Tesla 的真实战场集中在两个高频价位段：中型纯电轿车与中型纯电 SUV。</p>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/05-lineup-silhouettes.svg" alt="Tesla lineup silhouettes">
+      <figcaption class="img-cap">LOCAL HERO SET · MODEL 3 / MODEL Y</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">产品线聚焦</span><span>05 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Model 3</span><span>SEDAN CORE</span></div>
+  <div class="frame grid-2-8-4" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>不是运动轿车，而是效率标准件</div>
+      <h2 class="h-xl" data-anim style="font-size:5.4vw">Model 3 的强项，是把续航、能耗、加速和软件体验压进一个极简产品。</h2>
+    </div>
+    <div class="callout" data-anim>
+      <span class="q-big">它不像很多中国竞品那样堆功能，而是把选择变少，把交付稳定性做成体验的一部分。</span>
+      <span class="callout-src">PRODUCT READ · MODEL 3 CHINA</span>
+    </div>
+  </div>
+  <div class="foot"><span class="title">产品介绍 · Model 3</span><span>06 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Model 3</span><span>SPEC SNAPSHOT</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>官方中国页面参数</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Model 3 的参数表达，仍围绕三件事：跑得远、开得快、空间够。</h2>
+    <div class="grid-3" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">LONG RANGE RWD</span><span class="stat-nb">830<span class="stat-unit">km</span></span><span class="stat-note">CLTC 续航，长续航后轮驱动版。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">LONG RANGE AWD</span><span class="stat-nb">3.8<span class="stat-unit">s</span></span><span class="stat-note">零百加速，长续航全轮驱动版。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">STORAGE</span><span class="stat-nb">682<span class="stat-unit">L</span></span><span class="stat-note">前后备箱合计储物空间。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">Model 3 参数</span><span>07 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Model 3</span><span>USER FIT</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>谁会继续选 Model 3</div>
+    <h2 class="h-xl" data-anim style="max-width:78vw">它最适合对车辆本体效率敏感、但不想被复杂配置表消耗的人。</h2>
+    <div class="grid-4" style="margin-top:7vh">
+      <div class="pillar" data-anim><div class="ic">01</div><div class="t">通勤半径大</div><div class="d">续航与能耗稳定性比豪华配置更重要。</div></div>
+      <div class="pillar" data-anim><div class="ic">02</div><div class="t">驾驶偏好清晰</div><div class="d">低重心、直接转向、少层级操作构成核心愉悦。</div></div>
+      <div class="pillar" data-anim><div class="ic">03</div><div class="t">换车周期理性</div><div class="d">OTA、保值心智、全球服务网络降低长期不确定性。</div></div>
+      <div class="pillar" data-anim><div class="ic">04</div><div class="t">不追逐全家桶</div><div class="d">对手机车机生态、彩电冰箱式体验没有强依赖。</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">用户画像 · Model 3</span><span>08 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Model Y</span><span>SUV CORE</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>中国家庭车的默认参照物</div>
+      <h2 class="h-xl" data-anim style="font-size:5.6vw">Model Y 的价值不是某个参数突出，而是每个家庭高频场景都够用。</h2>
+      <p class="lead" data-anim>空间、能耗、视野、补能和品牌心智叠在一起，让它成为同级纯电 SUV 最难绕开的基准线。</p>
+    </div>
+    <div class="callout" data-anim style="margin-top:7vh">
+      <span class="q-big">Model Y 不是中国市场最会讲故事的 SUV，但它是很多竞品在配置页里默认要击穿的对象。</span>
+      <span class="callout-src">PRODUCT READ · MODEL Y CHINA</span>
+    </div>
+  </div>
+  <div class="foot"><span class="title">产品介绍 · Model Y</span><span>09 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Model Y</span><span>SPEC SNAPSHOT</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>官方中国页面参数</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Model Y 把 SUV 的核心诉求压成四个词：长续航、大空间、强补能、低学习成本。</h2>
+    <div class="grid-4" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">LONG RANGE RWD</span><span class="stat-nb">821<span class="stat-unit">km</span></span><span class="stat-note">CLTC 续航，长续航后轮驱动版。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">LONG RANGE AWD</span><span class="stat-nb">750<span class="stat-unit">km</span></span><span class="stat-note">CLTC 续航，长续航全轮驱动版。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">ACCELERATION</span><span class="stat-nb">4.3<span class="stat-unit">s</span></span><span class="stat-note">长续航全轮驱动版零百加速。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">STORAGE</span><span class="stat-nb">2138<span class="stat-unit">L</span></span><span class="stat-note">最大储物空间，覆盖露营、亲子、长途出行。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">Model Y 参数</span><span>10 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Model Y</span><span>USER FIT</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>谁会继续选 Model Y</div>
+    <h2 class="h-xl" data-anim style="max-width:78vw">家庭用户并不只买空间，也在买一次少出错的选择。</h2>
+    <div class="pipeline-section" data-anim>
+      <div class="pipeline-label">DECISION PATH</div>
+      <div class="pipeline" data-cols="4">
+        <div class="step" data-anim><span class="step-nb">01</span><span class="step-title">孩子与行李</span><span class="step-desc">大开口尾门、低门槛储物与后排屏幕降低日常摩擦。</span></div>
+        <div class="step" data-anim><span class="step-nb">02</span><span class="step-title">跨城出行</span><span class="step-desc">超充网络让路线规划更可预期。</span></div>
+        <div class="step" data-anim><span class="step-nb">03</span><span class="step-title">多人共用</span><span class="step-desc">极简交互对新驾驶者更友好。</span></div>
+        <div class="step" data-anim><span class="step-nb">04</span><span class="step-title">长期持有</span><span class="step-desc">品牌认知、售后网络和 OTA 降低后续焦虑。</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">用户画像 · Model Y</span><span>11 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Tesla Strengths</span><span>WHY IT STILL MATTERS</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>优势不是单项冠军，而是系统级成熟</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 的护城河，来自多个看似朴素的能力长期叠加。</h2>
+    <div class="grid-6" style="margin-top:5vh">
+      <div class="pillar" data-anim><div class="ic">01</div><div class="t">全球规模</div><div class="d">供应链与制造效率仍是底层优势。</div></div>
+      <div class="pillar" data-anim><div class="ic">02</div><div class="t">软件一致性</div><div class="d">车辆体验跨区域、跨车型更统一。</div></div>
+      <div class="pillar" data-anim><div class="ic">03</div><div class="t">补能网络</div><div class="d">超充覆盖与可用性塑造长期信任。</div></div>
+      <div class="pillar" data-anim><div class="ic">04</div><div class="t">低能耗心智</div><div class="d">实际使用中效率感比宣传参数更耐用。</div></div>
+      <div class="pillar" data-anim><div class="ic">05</div><div class="t">极简产品</div><div class="d">配置少，决策路径短，交付体验可控。</div></div>
+      <div class="pillar" data-anim><div class="ic">06</div><div class="t">品牌标尺</div><div class="d">竞品常以 Tesla 为默认对照，反向强化其基准地位。</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">优势分析</span><span>12 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Tesla Weaknesses</span><span>LOCAL PRESSURE</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>中国市场正在攻击它的空白处</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">当竞品不再模仿 Tesla，而是绕开它重新定义体验，压力就出现了。</h2>
+    <div class="grid-4" style="margin-top:7vh">
+      <div class="pillar" data-anim><div class="ic">01</div><div class="t">座舱本地化</div><div class="d">本土品牌更懂内容、语音、手机互联与家庭娱乐。</div></div>
+      <div class="pillar" data-anim><div class="ic">02</div><div class="t">价格进攻</div><div class="d">BYD 等品牌用更宽产品带制造价值锚点。</div></div>
+      <div class="pillar" data-anim><div class="ic">03</div><div class="t">快充叙事</div><div class="d">800V 与高倍率电池让“充得快”成为新宣传焦点。</div></div>
+      <div class="pillar" data-anim><div class="ic">04</div><div class="t">智驾确定性</div><div class="d">本地城市体验与监管节奏决定用户能否感知软件价值。</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">短板与压力</span><span>13 / 36</span></div>
+</section>
+
+<section class="slide hero dark" data-theme="dark">
+  <div class="chrome"><span>Act I</span><span>SEDAN BATTLEFIELD</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>轿车战场</div>
+      <h2 class="h-hero" data-anim style="font-size:9vw">Model 3<br>守擂</h2>
+      <p class="lead" data-anim>它面对的不只是新轿车，而是新品牌叙事、价格体系和本土生态的合围。</p>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/14-sedan-battlefield.svg" alt="Sedan competitive battlefield">
+      <figcaption class="img-cap">SEDAN FIELD · CHINA EV</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">竞品对比 · 轿车</span><span>14 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="directional">
+  <div class="chrome"><span>Model 3 vs Xiaomi SU7</span><span>ATTENTION ECONOMY</span></div>
+  <div class="frame grid-2-6-6" style="align-items:start">
+    <div class="col" data-anim="left">
+      <div class="kicker">Tesla Model 3</div>
+      <h2 class="h-md">成熟电动车产品</h2>
+      <div class="callout"><span class="q-big">强在效率、驾驶一致性、软件更新和长期品牌心智。</span><span class="callout-src">BASELINE · EV STACK</span></div>
+      <p class="body-zh">Model 3 的卖点更像“少解释也能成立”的标准答案：参数稳定、补能清楚、产品路径简单。</p>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">Xiaomi SU7</div>
+      <h2 class="h-md">流量型性能轿车</h2>
+      <div class="callout"><span class="q-big">强在性能叙事、手机车家生态和社交传播效率。</span><span class="callout-src">CHALLENGER · ECOSYSTEM</span></div>
+      <p class="body-zh">小米把车放进“人车家全生态”，用户买到的不只是轿车，也是一套熟悉的数字生活入口。</p>
+    </div>
+  </div>
+  <div class="foot"><span class="title">轿车对比 01</span><span>15 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark" data-animate="directional">
+  <div class="chrome"><span>Model 3 vs BYD Han</span><span>VALUE PRESSURE</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Tesla Model 3</div>
+      <h2 class="h-md">品牌标杆 + 纯电效率</h2>
+      <p class="lead">用更少车型配置承担更高的品牌期待。</p>
+      <div class="rowline"><div class="k">强项</div><div class="v">能耗、软件、超充、全球心智。</div><div class="m">TESLA</div></div>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">BYD Han</div>
+      <h2 class="h-md">中国主流价值锚</h2>
+      <p class="lead">用多能源路线、多价格配置和渠道密度拿下更宽用户层。</p>
+      <div class="rowline"><div class="k">强项</div><div class="v">价格弹性、电池安全叙事、品牌覆盖和本土渠道。</div><div class="m">BYD</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">轿车对比 02</span><span>16 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="directional">
+  <div class="chrome"><span>Model 3 vs BYD Seal</span><span>SEGMENTATION</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Model 3</div>
+      <h2 class="h-md">一套产品打一个核心价位</h2>
+      <p class="body-zh">优势在于清晰：用户不用研究太多版本，就能理解它为什么贵一点。</p>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">Seal Family</div>
+      <h2 class="h-md">多车系覆盖细分需求</h2>
+      <p class="body-zh">优势在于密度：通过更细的价位、尺寸、动力与配置组合，持续把 Model 3 的潜客分流。</p>
+    </div>
+    <div class="callout" data-anim style="grid-column:1 / -1;margin-top:5vh"><span class="q-big">轿车战场的本质，是“标准答案”对抗“细分答案”。</span><span class="callout-src">SEDAN SUMMARY</span></div>
+  </div>
+  <div class="foot"><span class="title">轿车对比 03</span><span>17 / 36</span></div>
+</section>
+
+<section class="slide hero light" data-theme="light" data-animate="quote">
+  <div class="chrome"><span>Sedan Takeaway</span><span>MODEL 3</span></div>
+  <div class="frame center">
+    <div class="kicker" data-anim>轿车结论</div>
+    <h2 class="h-xl" style="max-width:82vw">
+      <span data-anim="line" style="display:block">Model 3 不是最会抢热搜的轿车，</span>
+      <span data-anim="line" style="display:block">但仍是最像“度量衡”的轿车。</span>
+    </h2>
+    <p class="lead" data-anim style="max-width:64vw;margin-top:4vh">它的风险，是中国竞品正在把度量衡之外的体验做得越来越重。</p>
+  </div>
+  <div class="foot"><span class="title">轿车小结</span><span>18 / 36</span></div>
+</section>
+
+<section class="slide hero dark" data-theme="dark">
+  <div class="chrome"><span>Act II</span><span>SUV BATTLEFIELD</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>SUV 战场</div>
+      <h2 class="h-hero" data-anim style="font-size:9vw">Model Y<br>被围攻</h2>
+      <p class="lead" data-anim>中国品牌把家庭 SUV 做成了价格、科技、服务与生态的集中火力点。</p>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/19-suv-battlefield.svg" alt="SUV competitive battlefield">
+      <figcaption class="img-cap">SUV FIELD · CHINA EV</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">竞品对比 · SUV</span><span>19 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="directional">
+  <div class="chrome"><span>Model Y vs Xiaomi YU7</span><span>ECOSYSTEM ATTACK</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Tesla Model Y</div>
+      <h2 class="h-md">效率型家庭 SUV</h2>
+      <div class="stat-card"><span class="stat-label">CLTC RANGE</span><span class="stat-nb">821<span class="stat-unit">km</span></span><span class="stat-note">长续航后驱版，官方中国页面。</span></div>
+      <p class="body-zh">Model Y 的优势是稳定、简单和补能确定性。</p>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">Xiaomi YU7</div>
+      <h2 class="h-md">生态型性能 SUV</h2>
+      <div class="stat-card"><span class="stat-label">YU7 RANGE CLAIM</span><span class="stat-nb">835<span class="stat-unit">km</span></span><span class="stat-note">小米发布会披露的最长续航版本。</span></div>
+      <p class="body-zh">YU7 试图把家庭 SUV 变成人车家生态的高价值终端。</p>
+    </div>
+  </div>
+  <div class="foot"><span class="title">SUV 对比 01</span><span>20 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark" data-animate="directional">
+  <div class="chrome"><span>Model Y vs XPeng G6</span><span>SMART EV</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Model Y</div>
+      <h2 class="h-md">家庭默认选择</h2>
+      <p class="lead">强在品牌心智、空间、能耗与超充网络。</p>
+      <div class="callout"><span class="q-big">购买理由偏稳：少试错，少解释。</span><span class="callout-src">TESLA ADVANTAGE</span></div>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">XPeng G6</div>
+      <h2 class="h-md">智能与快充进攻</h2>
+      <p class="lead">官方配置页强调 625 km CLTC、12 分钟 10%-80% 快充与智能辅助驾驶芯片方案。</p>
+      <div class="callout"><span class="q-big">购买理由偏新：用本土智能体验解释价值。</span><span class="callout-src">XPENG G6</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">SUV 对比 02</span><span>21 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="directional">
+  <div class="chrome"><span>Model Y vs NIO ES6</span><span>SERVICE PREMIUM</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Model Y</div>
+      <h2 class="h-md">效率与极简</h2>
+      <p class="body-zh">它把家庭 SUV 的决策压缩到续航、空间、补能和品牌信任。</p>
+      <div class="rowline"><div class="k">心智</div><div class="v">技术标杆、全球车型、直营效率。</div><div class="m">TESLA</div></div>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">NIO ES6</div>
+      <h2 class="h-md">服务与社群</h2>
+      <p class="body-zh">ES6 更强调服务网络、换电体验、豪华感和用户社区。</p>
+      <div class="rowline"><div class="k">心智</div><div class="v">服务溢价、换电灵活性、社群身份。</div><div class="m">NIO</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">SUV 对比 03</span><span>22 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark" data-animate="directional">
+  <div class="chrome"><span>Model Y vs Zeekr 7X</span><span>800V LUXURY</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Model Y</div>
+      <h2 class="h-md">成熟平台</h2>
+      <div class="stat-card"><span class="stat-label">MAX STORAGE</span><span class="stat-nb">2138<span class="stat-unit">L</span></span><span class="stat-note">空间实用性仍是家庭 SUV 的硬指标。</span></div>
+      <p class="body-zh">Model Y 的打法是把高频场景做稳。</p>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">Zeekr 7X</div>
+      <h2 class="h-md">高压快充 + 豪华配置</h2>
+      <div class="stat-card"><span class="stat-label">FAST CHARGE CLAIM</span><span class="stat-nb">10.5<span class="stat-unit">min</span></span><span class="stat-note">75 kWh 版本官方披露 10%-80% 快充时间。</span></div>
+      <p class="body-zh">Zeekr 更像用豪华、底盘与补能效率打穿中高端 SUV。</p>
+    </div>
+  </div>
+  <div class="foot"><span class="title">SUV 对比 04</span><span>23 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light" data-animate="directional">
+  <div class="chrome"><span>Model Y vs BYD Song Family</span><span>VOLUME GAME</span></div>
+  <div class="frame grid-2-6-6">
+    <div class="col" data-anim="left">
+      <div class="kicker">Model Y</div>
+      <h2 class="h-md">高价值单品</h2>
+      <p class="lead">用一个强单品守住中高端纯电家庭用户。</p>
+      <div class="callout"><span class="q-big">优势在品牌，但价格带向下延展有限。</span><span class="callout-src">PREMIUM SINGLE HERO</span></div>
+    </div>
+    <div class="col" data-anim="right">
+      <div class="kicker">BYD Song Family</div>
+      <h2 class="h-md">大规模家庭车矩阵</h2>
+      <p class="lead">通过纯电与插混、多尺寸、多价位组合覆盖更宽需求。</p>
+      <div class="callout"><span class="q-big">优势在规模，但单车高级感与全球科技心智不同。</span><span class="callout-src">MASS MARKET MATRIX</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">SUV 对比 05</span><span>24 / 36</span></div>
+</section>
+
+<section class="slide hero light" data-theme="light" data-animate="quote">
+  <div class="chrome"><span>SUV Takeaway</span><span>MODEL Y</span></div>
+  <div class="frame center">
+    <div class="kicker" data-anim>SUV 结论</div>
+    <h2 class="h-xl" style="max-width:84vw">
+      <span data-anim="line" style="display:block">Model Y 仍是中国纯电 SUV 的标尺，</span>
+      <span data-anim="line" style="display:block">但标尺旁边已经摆满了新答案。</span>
+    </h2>
+    <p class="lead" data-anim style="max-width:70vw;margin-top:4vh">竞品不是只在一个点上超越它，而是在不同用户场景里拆解它。</p>
+  </div>
+  <div class="foot"><span class="title">SUV 小结</span><span>25 / 36</span></div>
+</section>
+
+<section class="slide hero dark" data-theme="dark">
+  <div class="chrome"><span>Act III</span><span>INTELLIGENCE</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>智能化竞争</div>
+      <h2 class="h-hero" data-anim style="font-size:8.4vw">软件<br>兑现</h2>
+      <p class="lead" data-anim>中国用户看见的，不是全球路线图，而是今天能不能在本地道路、本地座舱、本地服务里工作。</p>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/26-assisted-driving-sensors.svg" alt="Assisted driving sensors visual">
+      <figcaption class="img-cap">SENSORS · SOFTWARE · REGULATION</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">智能化分析</span><span>26 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Autopilot / FSD</span><span>BOUNDARY</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>官方边界要讲清楚</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 的软件价值很强，但在中国要区分“能力预期”和“可用体验”。</h2>
+    <div class="grid-3" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">BASIC AUTOPILOT</span><span class="stat-nb" style="font-size:4.4vw">辅助</span><span class="stat-note">官方中国页面将基础版辅助驾驶作为驾驶员监督下的功能表达。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">FSD EXPECTATION</span><span class="stat-nb" style="font-size:4.4vw">预期</span><span class="stat-note">用户对高阶辅助驾驶有期待，但落地取决于本地合规与版本节奏。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">USER PROOF</span><span class="stat-nb" style="font-size:4.4vw">体验</span><span class="stat-note">最终竞争会回到高频通勤路段的稳定性与信任感。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">辅助驾驶边界</span><span>27 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Local ADAS</span><span>CHINA RIVALS</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>本土品牌在用“城市体验”重写评判标准</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">在中国，高阶辅助驾驶不是发布会功能，而是城市路况中的口碑资产。</h2>
+    <div class="pipeline-section" data-anim>
+      <div class="pipeline-label">COMPETITIVE PRESSURE</div>
+      <div class="pipeline" data-cols="4">
+        <div class="step" data-anim><span class="step-nb">01</span><span class="step-title">XPeng</span><span class="step-desc">持续强调智能驾驶与快充组合，形成“智能纯电”心智。</span></div>
+        <div class="step" data-anim><span class="step-nb">02</span><span class="step-title">NIO</span><span class="step-desc">用传感器、服务和换电网络构建高端体验。</span></div>
+        <div class="step" data-anim><span class="step-nb">03</span><span class="step-title">Huawei 系</span><span class="step-desc">把座舱、智驾与渠道流量打包成强系统方案。</span></div>
+        <div class="step" data-anim><span class="step-nb">04</span><span class="step-title">Li Auto</span><span class="step-desc">用家庭场景与智能座舱降低学习成本。</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">本土智驾压力</span><span>28 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Cockpit</span><span>LOCALIZATION</span></div>
+  <div class="frame grid-2-8-4">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>座舱不只是屏幕数量</div>
+      <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 的极简座舱是审美，也是边界。</h2>
+      <p class="lead" data-anim>15.4 英寸中控屏、后排屏、OTA 和统一交互构成 Tesla 体验；但中国用户越来越习惯车机承接手机、视频、语音、家居与服务。</p>
+    </div>
+    <div class="callout" data-anim style="margin-top:8vh">
+      <span class="q-big">极简的优点是少干扰；极简的风险，是当用户开始期待更多入口时，它看起来“不够本地”。</span>
+      <span class="callout-src">COCKPIT TAKEAWAY</span>
+    </div>
+  </div>
+  <div class="foot"><span class="title">座舱分析</span><span>29 / 36</span></div>
+</section>
+
+<section class="slide hero light" data-theme="light">
+  <div class="chrome"><span>Act IV</span><span>CHARGING &amp; ECOSYSTEM</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>补能与生态</div>
+      <h2 class="h-hero" data-anim style="font-size:8vw">15 分钟<br>的战争</h2>
+      <p class="lead" data-anim>当所有人都能讲长续航，补能速度、站点可用性和路线确定性就变成体验差异。</p>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/30-charging-network.svg" alt="Charging network visual">
+      <figcaption class="img-cap">SUPERCHARGER · FAST CHARGE · ROUTE</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">补能与生态</span><span>30 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Supercharger</span><span>NETWORK ADVANTAGE</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>补能是 Tesla 最容易被低估的产品</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">超充网络把“能不能开远”翻译成“敢不敢规划”。</h2>
+    <div class="grid-3" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">GLOBAL NETWORK</span><span class="stat-nb">80K+</span><span class="stat-note">Tesla 官方超充页面披露全球 Supercharger 超过 80,000 个。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">PEAK POWER</span><span class="stat-nb">250<span class="stat-unit">kW</span></span><span class="stat-note">V3 / V4 Supercharger 峰值功率口径。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">15 MINUTES</span><span class="stat-nb">250<span class="stat-unit">km</span></span><span class="stat-note">官方表述：最快 15 分钟补充约 250 km 续航。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">超充网络</span><span>31 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Fast Charge Pressure</span><span>800V NARRATIVE</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>对手正在改变补能话术</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 讲网络确定性，中国竞品讲高压快充的瞬时效率。</h2>
+    <div class="grid-3" style="margin-top:7vh">
+      <div class="stat-card" data-anim><span class="stat-label">XIAOMI YU7</span><span class="stat-nb">12<span class="stat-unit">min</span></span><span class="stat-note">发布会披露 10%-80% 充电时间；另有 15 分钟补能 620 km 表述。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">XPENG G6</span><span class="stat-nb">12<span class="stat-unit">min</span></span><span class="stat-note">官方配置页披露 10%-80% 快充时间。</span></div>
+      <div class="stat-card" data-anim><span class="stat-label">ZEEKR 7X</span><span class="stat-nb">10.5<span class="stat-unit">min</span></span><span class="stat-note">75 kWh 版本官方披露 10%-80% 快充时间。</span></div>
+    </div>
+    <p class="meta" data-anim style="margin-top:4vh">注：CLTC、WLTP、EPA 与快充口径不可直接横向等同，此处用于展示传播叙事。</p>
+  </div>
+  <div class="foot"><span class="title">快充叙事压力</span><span>32 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Ecosystem</span><span>ENTRY POINT</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>车正在成为生态入口</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 把车做成软件终端，中国品牌把车接入生活系统。</h2>
+    <div class="pipeline-section" data-anim>
+      <div class="pipeline-label">ECOSYSTEM VECTOR</div>
+      <div class="pipeline" data-cols="5">
+        <div class="step" data-anim><span class="step-nb">01</span><span class="step-title">手机</span><span class="step-desc">账号、互联、应用生态迁移到车上。</span></div>
+        <div class="step" data-anim><span class="step-nb">02</span><span class="step-title">内容</span><span class="step-desc">视频、音频、游戏与后排娱乐成为家庭场景。</span></div>
+        <div class="step" data-anim><span class="step-nb">03</span><span class="step-title">家居</span><span class="step-desc">车与智能家居、能源设备、服务预约联动。</span></div>
+        <div class="step" data-anim><span class="step-nb">04</span><span class="step-title">服务</span><span class="step-desc">门店、社群、充换电与保险维修影响长期体验。</span></div>
+        <div class="step" data-anim><span class="step-nb">05</span><span class="step-title">数据</span><span class="step-desc">用户行为与路线场景反哺产品迭代。</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">生态入口</span><span>33 / 36</span></div>
+</section>
+
+<section class="slide light" data-theme="light">
+  <div class="chrome"><span>Strategy</span><span>WHAT TESLA NEEDS</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>战略判断</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">在中国，Tesla 不需要变成中国品牌，但必须让本地价值更可见。</h2>
+    <div class="grid-4" style="margin-top:7vh">
+      <div class="pillar" data-anim><div class="ic">01</div><div class="t">价格纪律</div><div class="d">用清晰版本和权益而非频繁降价维持品牌可信度。</div></div>
+      <div class="pillar" data-anim><div class="ic">02</div><div class="t">座舱本地化</div><div class="d">让内容、语音、手机互联与后排体验更贴近中国家庭。</div></div>
+      <div class="pillar" data-anim><div class="ic">03</div><div class="t">补能可视化</div><div class="d">把超充稳定性、站点可用性和路线体验讲得更直观。</div></div>
+      <div class="pillar" data-anim><div class="ic">04</div><div class="t">软件兑现</div><div class="d">把高阶辅助驾驶从期待管理推进到可感知的本地体验。</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">战略建议</span><span>34 / 36</span></div>
+</section>
+
+<section class="slide dark" data-theme="dark">
+  <div class="chrome"><span>Risk Map</span><span>WHERE IT CAN LOSE</span></div>
+  <div class="frame">
+    <div class="kicker" data-anim>风险列表</div>
+    <h2 class="h-xl" data-anim style="font-size:5.2vw">Tesla 在中国会输在“整体体验差一点”，而不是某个参数少一点。</h2>
+    <div class="grid-3-3" style="margin-top:6vh">
+      <div class="step" data-anim><span class="step-nb">01</span><span class="step-title">价格战钝化品牌</span><span class="step-desc">频繁价格变化会削弱高端科技品牌心智。</span></div>
+      <div class="step" data-anim><span class="step-nb">02</span><span class="step-title">产品节奏变慢</span><span class="step-desc">中国品牌的年度迭代速度会放大车型生命周期压力。</span></div>
+      <div class="step" data-anim><span class="step-nb">03</span><span class="step-title">座舱落差</span><span class="step-desc">家庭娱乐、语音、手机互联若落后，会被日常高频放大。</span></div>
+      <div class="step" data-anim><span class="step-nb">04</span><span class="step-title">智驾落地不确定</span><span class="step-desc">用户不为愿景长期等待，只为可用体验买单。</span></div>
+      <div class="step" data-anim><span class="step-nb">05</span><span class="step-title">快充话术被抢走</span><span class="step-desc">网络优势需要转译，否则会被 800V 数字传播掩盖。</span></div>
+      <div class="step" data-anim><span class="step-nb">06</span><span class="step-title">生态入口旁落</span><span class="step-desc">当车成为生活系统入口，极简可能从优势变成空白。</span></div>
+    </div>
+  </div>
+  <div class="foot"><span class="title">风险地图</span><span>35 / 36</span></div>
+</section>
+
+<section class="slide hero light" data-theme="light" data-animate="quote">
+  <div class="chrome"><span>Closing</span><span>BENCHMARK STILL STANDS</span></div>
+  <div class="frame grid-2-7-5" style="align-items:center">
+    <div class="col" style="gap:3vh">
+      <div class="kicker" data-anim>最后一句</div>
+      <h2 class="h-xl" style="font-size:5.9vw">
+        <span data-anim="line" style="display:block">Tesla 不再是唯一答案，</span>
+        <span data-anim="line" style="display:block">但仍是一道很强的答案。</span>
+      </h2>
+      <p class="lead" data-anim>中国市场真正改变的，是所有答案都必须同时接受产品、生态、补能、价格和软件兑现的审问。</p>
+      <div class="meta-row" data-anim><span>PRODUCT</span><span>ANALYSIS</span><span>COMPARISON</span></div>
+    </div>
+    <figure class="frame-img r-16x10 fit-contain" data-anim>
+      <img src="images/36-closing-benchmark.svg" alt="Benchmark closing visual">
+      <figcaption class="img-cap">TESLA AS BENCHMARK · CHINA EV</figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span class="title">收束</span><span>36 / 36</span></div>
+</section>
+
+</div>
+
+<div id="nav"></div>
+
+<script>
+/* =============== WebGL 双背景 ===============
+   深色页：Holographic Dispersion（全息色散 · 钛金暗流）—— 彩虹微扰、鼠标径向涟漪
+   浅色页：Spiral Vortex（旋转涡流 · 银色珍珠）—— domain-warp 流动、无中心
+   修改风格请参考 references/webgl-backgrounds.md
+*/
+const VS = `attribute vec2 position;void main(){gl_Position=vec4(position,0.0,1.0);}`;
+
+const FS_DARK = `precision highp float;
+uniform vec2 u_resolution;uniform float u_time;uniform vec2 u_mouse;
+vec3 palette(float t,vec3 a,vec3 b,vec3 c,vec3 d){return a+b*cos(6.28318*(c*t+d));}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  vec2 p=uv*2.0-1.0;p.x*=u_resolution.x/u_resolution.y;
+  vec2 m=u_mouse*2.0-1.0;m.x*=u_resolution.x/u_resolution.y;
+  float md=length(p-m);
+  float mr=sin(md*15.0-u_time*4.0)*exp(-md*3.0);p+=mr*0.08;
+  vec2 p0=p;
+  for(float i=1.0;i<4.0;i++){
+    p.x+=0.1/i*sin(i*3.0*p.y+u_time*0.4)+0.05;
+    p.y+=0.1/i*cos(i*2.0*p.x+u_time*0.3)-0.05;
+  }
+  float r=length(p);float ang=atan(p.y,p.x);
+  vec3 a=vec3(0.12,0.12,0.13);
+  vec3 b=vec3(0.03,0.04,0.05);
+  vec3 c=vec3(1.0,1.0,1.0);
+  vec3 d=vec3(0.1,0.2,0.4);
+  vec3 col=palette(r*1.5+p0.x*0.5+u_time*0.1,a,b,c,d);
+  float disp=sin(r*25.0-u_time*1.5+ang*2.0)*0.5+0.5;
+  col+=vec3(disp*0.015,disp*0.01,disp*0.02);
+  float hi=pow(sin(p.x*4.0+p.y*3.0+u_time)*0.5+0.5,8.0);
+  col+=hi*0.08;
+  vec3 base=vec3(0.05,0.05,0.06);
+  col=mix(base,col,0.85);
+  gl_FragColor=vec4(col,1.0);
+}`;
+
+const FS_LIGHT = `precision highp float;
+uniform vec2 u_resolution;uniform float u_time;uniform vec2 u_mouse;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  float a=hash(i),b=hash(i+vec2(1,0));
+  float c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));
+  vec2 u=f*f*(3.0-2.0*f);
+  return mix(a,b,u.x)+(c-a)*u.y*(1.0-u.x)+(d-b)*u.x*u.y;
+}
+float fbm(vec2 p){
+  float v=0.0,a=0.5;
+  mat2 m=mat2(0.80,0.60,-0.60,0.80);
+  for(int i=0;i<5;i++){v+=a*noise(p);p=m*p*2.02;a*=0.5;}
+  return v;
+}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  vec2 p=uv;p.x*=u_resolution.x/u_resolution.y;
+  vec2 m=u_mouse;m.x*=u_resolution.x/u_resolution.y;
+  vec2 md=p-m;float dl=length(md);
+  p+=normalize(md+vec2(0.0001))*exp(-dl*5.0)*0.03;
+  vec2 q=vec2(fbm(p*1.8+u_time*0.07),fbm(p*1.8+vec2(5.2,1.3)+u_time*0.06));
+  vec2 r=vec2(fbm(p*2.0+q*1.3+vec2(1.7,9.2)+u_time*0.05),
+              fbm(p*2.0+q*1.3+vec2(8.3,2.8)+u_time*0.04));
+  float f=fbm(p*2.2+r*1.5);
+  vec3 silverDark=vec3(0.86,0.85,0.84);
+  vec3 paper=vec3(0.955,0.945,0.925);
+  vec3 col=mix(silverDark,paper,f);
+  float ph=r.x*2.2+u_time*0.35;
+  col+=vec3(0.78,0.62,0.92)*sin(ph)*0.055;
+  col+=vec3(0.55,0.72,0.95)*sin(ph*0.8+2.0)*0.05;
+  float hl=smoothstep(0.48,0.92,f);
+  col+=hl*0.06;
+  gl_FragColor=vec4(col,1.0);
+}`;
+
+const mouse={x:0.5,y:0.5};
+addEventListener('mousemove',e=>{mouse.x=e.clientX/innerWidth;mouse.y=e.clientY/innerHeight});
+
+function bootGL(canvasId, fsSrc){
+  const canvas=document.getElementById(canvasId);
+  const gl=canvas.getContext('webgl',{alpha:false,antialias:true});
+  if(!gl) return ()=>false;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh};
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fsSrc));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const pos=gl.getAttribLocation(prog,'position');
+  gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+  const lRes=gl.getUniformLocation(prog,'u_resolution');
+  const lT=gl.getUniformLocation(prog,'u_time');
+  const lM=gl.getUniformLocation(prog,'u_mouse');
+  const resize=()=>{
+    const d=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=innerWidth*d;canvas.height=innerHeight*d;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  };
+  addEventListener('resize',resize);resize();
+  return (tSec)=>{
+    gl.uniform2f(lRes,canvas.width,canvas.height);
+    gl.uniform1f(lT,tSec);
+    gl.uniform2f(lM,mouse.x,1-mouse.y);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    return true;
+  };
+}
+const drawDark=bootGL('bg-dark',FS_DARK);
+const drawLight=bootGL('bg-light',FS_LIGHT);
+const t0=Date.now();
+(function loop(){
+  const t=(Date.now()-t0)/1000;
+  drawDark(t);drawLight(t);
+  requestAnimationFrame(loop);
+})();
+
+// =============== 导航（翻页 / 圆点 / 键盘 / 滚轮 / 触屏） ===============
+const deck=document.getElementById('deck');
+const slides=deck.querySelectorAll('.slide');
+const nav=document.getElementById('nav');
+let idx=0,total=slides.length,lock=false;
+
+// 关键：矫正 deck 宽度为 total * 100vw，否则翻页会错位
+deck.style.width=(total*100)+'vw';
+
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='dot';b.dataset.i=i;b.setAttribute('aria-label','Page '+(i+1));
+  b.onclick=()=>go(i);
+  nav.appendChild(b);
+});
+
+function go(n){
+  if(lock)return;
+  idx=Math.max(0,Math.min(total-1,n));
+  deck.style.transform=`translateX(${-idx*100}vw)`;
+  nav.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  /* 主题切换：优先读 data-theme，其次从 class（light/dark）推断 */
+  const el=slides[idx];
+  const th=el.dataset.theme || (el.classList.contains('light')?'light':(el.classList.contains('dark')?'dark':'dark'));
+  document.body.classList.toggle('light-bg',th==='light');
+  /* 动效：翻页过渡中段触发当前页的入场动画（由 motion-boot 注册） */
+  if(window.__playSlide) setTimeout(()=>window.__playSlide(idx), 450);
+  lock=true;setTimeout(()=>lock=false,700);
+}
+
+/* =============== ESC 索引视图 =============== */
+let overviewOn=false;
+const ov=document.createElement('div');
+ov.id='overview';
+ov.style.cssText='position:fixed;inset:0;z-index:100;background:rgba(var(--ink-rgb),.92);backdrop-filter:blur(12px);display:none;overflow-y:auto;padding:4vh 4vw';
+document.body.appendChild(ov);
+
+function buildOverview(){
+  ov.innerHTML='';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:2vh 1.6vw;max-width:90vw;margin:0 auto';
+  slides.forEach((s,i)=>{
+    const card=document.createElement('div');
+    card.style.cssText='cursor:pointer;border-radius:6px;overflow:hidden;border:2px solid '+(i===idx?'rgba(var(--paper-rgb),.8)':'rgba(var(--paper-rgb),.15)')+';transition:border-color .2s';
+    card.onmouseenter=()=>card.style.borderColor='rgba(var(--paper-rgb),.6)';
+    card.onmouseleave=()=>card.style.borderColor=i===idx?'rgba(var(--paper-rgb),.8)':'rgba(var(--paper-rgb),.15)';
+    const wrap=document.createElement('div');
+    wrap.style.cssText='width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;pointer-events:none;background:'+(s.classList.contains('light')?'var(--paper)':'var(--ink)');
+    const clone=s.cloneNode(true);
+    clone.style.cssText='width:100vw;height:100vh;transform:scale('+(1/4.5)+');transform-origin:top left;position:absolute;top:0;left:0;pointer-events:none';
+    wrap.appendChild(clone);
+    const label=document.createElement('div');
+    label.style.cssText='padding:6px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);opacity:.7';
+    label.textContent=(i+1)+' / '+total;
+    card.appendChild(wrap);
+    card.appendChild(label);
+    card.onclick=()=>{toggleOverview();go(i)};
+    grid.appendChild(card);
+  });
+  ov.appendChild(grid);
+}
+
+function toggleOverview(){
+  overviewOn=!overviewOn;
+  if(overviewOn){buildOverview();ov.style.display='block';}
+  else{ov.style.display='none';}
+}
+
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();toggleOverview();return;}
+  if(overviewOn)return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '||e.key==='ArrowDown'){
+    if(window.__pipeAdvance && window.__pipeAdvance()) return;
+    go(idx+1);
+    return;
+  }
+  if(e.key==='ArrowLeft'||e.key==='PageUp'||e.key==='ArrowUp')go(idx-1);
+  if(e.key==='Home')go(0);
+  if(e.key==='End')go(total-1);
+});
+
+let wheelTO=null,wheelAcc=0;
+addEventListener('wheel',e=>{
+  wheelAcc+=e.deltaY+e.deltaX;
+  if(Math.abs(wheelAcc)>50){
+    if(wheelAcc>0 && window.__pipeAdvance && window.__pipeAdvance()){
+      wheelAcc=0;
+    }else{
+      go(idx+(wheelAcc>0?1:-1));wheelAcc=0;
+    }
+  }
+  clearTimeout(wheelTO);wheelTO=setTimeout(()=>wheelAcc=0,150);
+},{passive:true});
+
+let tx=0,ty=0;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+addEventListener('touchend',e=>{
+  const dx=(e.changedTouches[0].clientX-tx);
+  const dy=(e.changedTouches[0].clientY-ty);
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){
+    if(dx<0 && window.__pipeAdvance && window.__pipeAdvance()) return;
+    go(idx+(dx<0?1:-1));
+  }
+},{passive:true});
+
+go(0);
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+
+<!-- ============ Motion One 动效引擎（本地优先,CDN 兜底） ============
+     加载策略:先 ./assets/motion.min.js(本地,离线可用),失败 fallback 到 jsDelivr CDN
+     加载完成后挂 window.__playSlide / window.__pipeAdvance,
+     导航脚本会在翻页中段调用 __playSlide(idx),键盘/滚轮/触屏会在翻页前调用 __pipeAdvance()
+     双双失败时会兜底把所有 [data-anim] 设为可见,不让动效破坏阅读
+-->
+<script type="module">
+let motion;
+try {
+  motion = await import('./assets/motion.min.js');
+} catch(e1) {
+  try {
+    motion = await import('https://cdn.jsdelivr.net/npm/motion@11.11.17/+esm');
+  } catch(e2) {
+    console.warn('[motion] local + CDN both failed, disabling animations', e1, e2);
+    document.querySelectorAll('[data-anim]').forEach(el=>{el.style.opacity='1';el.style.transform='none'});
+    document.querySelectorAll('[data-animate="pipeline"] [data-anim]').forEach(el=>el.style.opacity='1');
+  }
+}
+
+if(motion){
+  const { animate, stagger } = motion;
+  document.body.classList.add('motion-ready');
+  const EASE = [.22, 1, .36, 1];
+  const slides = [...document.querySelectorAll('.slide')];
+  let pipeStep = -1;
+  let lastIdx = -1;
+
+  function resetAnims(slide){
+    slide.querySelectorAll('[data-anim]').forEach(el=>{
+      el.style.opacity='';
+      el.style.transform='';
+    });
+  }
+
+  function playSlide(i){
+    const slide = slides[i];
+    if(!slide) return;
+    lastIdx = i;
+    const recipe = slide.dataset.animate || (slide.classList.contains('hero') ? 'hero' : 'cascade');
+
+    if(recipe === 'pipeline'){
+      pipeStep = -1;
+      slide.querySelectorAll('[data-anim]').forEach(el=>{
+        el.style.opacity='0.15';
+        el.style.transform='none';
+      });
+      return;
+    }
+
+    resetAnims(slide);
+    const all = [...slide.querySelectorAll('[data-anim]')];
+    if(!all.length) return;
+
+    if(recipe === 'directional'){
+      const lefts  = all.filter(el=>el.dataset.anim==='left');
+      const divs   = all.filter(el=>el.dataset.anim==='divider');
+      const rights = all.filter(el=>el.dataset.anim==='right');
+      const others = all.filter(el=>!['left','right','divider'].includes(el.dataset.anim));
+      if(others.length) animate(others, {opacity:[0,1], y:[12,0]}, {duration:.6, delay:stagger(.1, {start:.15}), easing:EASE});
+      if(lefts.length)  animate(lefts,  {opacity:[0,1], x:[-24,0]}, {duration:.8, delay:.35, easing:EASE});
+      if(divs.length)   animate(divs,   {opacity:[0,.25]},          {duration:.5, delay:.9});
+      if(rights.length) animate(rights, {opacity:[0,1], x:[24,0]},  {duration:.8, delay:1.0, easing:EASE});
+      return;
+    }
+
+    if(recipe === 'quote'){
+      const lines = all.filter(el=>el.dataset.anim==='line');
+      const others = all.filter(el=>el.dataset.anim!=='line');
+      if(others.length) animate(others, {opacity:[0,1], y:[8,0]},    {duration:.6, delay:stagger(.12, {start:.2}), easing:EASE});
+      if(lines.length)  animate(lines,  {opacity:[.35,1], y:[10,0]}, {duration:.8, delay:stagger(.55, {start:.5}), easing:EASE});
+      return;
+    }
+
+    if(recipe === 'hero'){
+      animate(all, {opacity:[0,1], y:[14,0]}, {duration:.9, delay:stagger(.16, {start:.2}), easing:EASE});
+      return;
+    }
+
+    // default: cascade
+    animate(all, {opacity:[0,1], y:[16,0]}, {duration:.75, delay:stagger(.1, {start:.15}), easing:EASE});
+  }
+
+  function pipeAdvance(){
+    const slide = slides[lastIdx];
+    if(!slide || slide.dataset.animate !== 'pipeline') return false;
+    const steps  = [...slide.querySelectorAll('[data-anim="step"]')];
+    const arrows = [...slide.querySelectorAll('[data-anim="arrow"]')];
+    if(pipeStep >= steps.length - 1) return false;
+    pipeStep++;
+    animate(steps[pipeStep], {opacity:[0.15,1], y:[8,0]}, {duration:.5, easing:EASE});
+    if(pipeStep > 0 && arrows[pipeStep-1]){
+      animate(arrows[pipeStep-1], {opacity:[0.15,.7]}, {duration:.3, delay:.15});
+    }
+    return true;
+  }
+
+  window.__playSlide = playSlide;
+  window.__pipeAdvance = pipeAdvance;
+
+  // 首屏:go(0) 已跑过(同步),没来得及触发动效 → 这里补一下
+  playSlide(0);
+}
+</script>
+</body>
+</html>

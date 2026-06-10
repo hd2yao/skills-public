@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Project Bootstrap"
+  short_description: "Create and connect new GitHub project repos"
+  default_prompt: "Use $github-project-bootstrap to create a GitHub repository and connect a local project directory from this project description:"

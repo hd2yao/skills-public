@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>腾讯文档隐藏式接入 POC</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel">
+        <p class="eyebrow">Tencent Docs Hidden Capture</p>
+        <h1>腾讯文档隐藏式接入 POC</h1>
+        <p class="summary">
+          用户只负责登录。浏览器窗口打开后完成腾讯文档登录，后台会自动继续抓取和保存 token。
+        </p>
+        <div class="actions">
+          <button id="start-button" type="button">启动登录会话</button>
+        </div>
+        <pre id="status-panel">等待启动</pre>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+  </html>

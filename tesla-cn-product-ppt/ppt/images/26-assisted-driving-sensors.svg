@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 1152" role="img" aria-label="Assisted driving sensor visual">
+  <defs>
+    <radialGradient id="r" cx=".5" cy=".48" r=".58">
+      <stop offset="0" stop-color="#dbe7f4"/>
+      <stop offset=".5" stop-color="#f1f3f5"/>
+      <stop offset="1" stop-color="#0a1f3d"/>
+    </radialGradient>
+  </defs>
+  <rect width="2048" height="1152" fill="url(#r)"/>
+  <g fill="none" stroke="#0a1f3d" stroke-width="2" opacity=".3">
+    <path d="M1024 705 318 172M1024 705 512 92M1024 705 820 48M1024 705l0-650M1024 705l206-657M1024 705l514-613M1024 705l710-533"/>
+    <path d="M1024 705 246 920M1024 705 548 1032M1024 705l0 386M1024 705l475 327M1024 705l778 215"/>
+    <circle cx="1024" cy="705" r="190"/><circle cx="1024" cy="705" r="330"/><circle cx="1024" cy="705" r="480"/>
+  </g>
+  <g opacity=".52" fill="#0a1f3d">
+    <circle cx="318" cy="172" r="6"/><circle cx="512" cy="92" r="4"/><circle cx="820" cy="48" r="5"/>
+    <circle cx="1230" cy="48" r="5"/><circle cx="1538" cy="92" r="4"/><circle cx="1734" cy="172" r="6"/>
+    <circle cx="548" cy="1032" r="5"/><circle cx="1499" cy="1032" r="5"/><circle cx="1802" cy="920" r="4"/>
+  </g>
+  <g fill="#07172d" stroke="#f1f3f5" stroke-width="5">
+    <path d="M650 700c78-104 196-148 372-140h72c176-8 294 36 372 140l70 92c23 31 1 76-38 76H618c-39 0-61-45-38-76z"/>
+    <circle cx="790" cy="886" r="60"/><circle cx="1320" cy="886" r="60"/>
+  </g>
+  <g fill="none" stroke="#f1f3f5" stroke-width="3" opacity=".9">
+    <path d="M820 682c80-48 398-48 470 0"/>
+    <path d="M940 640h230"/>
+  </g>
+</svg>

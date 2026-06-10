@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 1152" role="img" aria-label="Charging network visual">
+  <rect width="2048" height="1152" fill="#0a1f3d"/>
+  <g opacity=".18" stroke="#f1f3f5" stroke-width="1" fill="none">
+    <path d="M140 240c390 22 520 220 820 220s430-160 930-120"/>
+    <path d="M100 600c300-110 490-80 760 64s520 190 1040-18"/>
+    <path d="M180 910c420-210 700-120 940-20s430 92 760-10"/>
+  </g>
+  <g stroke="#dbe7f4" stroke-width="4" fill="none" opacity=".7">
+    <path d="M250 820 560 650 850 720 1120 500 1400 600 1720 390"/>
+    <path d="M560 650 700 360 1120 500 1300 250"/>
+    <path d="M850 720 1030 900 1400 600 1640 830"/>
+  </g>
+  <g fill="#f1f3f5">
+    <circle cx="250" cy="820" r="16"/><circle cx="560" cy="650" r="16"/><circle cx="850" cy="720" r="16"/>
+    <circle cx="1120" cy="500" r="16"/><circle cx="1400" cy="600" r="16"/><circle cx="1720" cy="390" r="16"/>
+    <circle cx="700" cy="360" r="12"/><circle cx="1300" cy="250" r="12"/><circle cx="1030" cy="900" r="12"/><circle cx="1640" cy="830" r="12"/>
+  </g>
+  <g fill="#dbe7f4" opacity=".88">
+    <path d="M226 735h48v96h-48zM536 565h48v96h-48zM1096 415h48v96h-48zM1696 305h48v96h-48z"/>
+  </g>
+  <g fill="#07172d" stroke="#f1f3f5" stroke-width="3">
+    <path d="M920 824c52-42 142-52 222-38 60 10 110 42 142 82 12 15 2 37-17 39l-420 48c-30 3-52-27-41-55 13-34 44-56 114-76z"/>
+    <circle cx="980" cy="958" r="32"/><circle cx="1250" cy="926" r="32"/>
+  </g>
+</svg>

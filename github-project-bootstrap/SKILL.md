@@ -1,6 +1,6 @@
 ---
 name: github-project-bootstrap
-description: Use when 用户想根据一段项目描述启动新项目，并需要 Codex 生成项目/仓库名称、在个人 GitHub 创建仓库、创建或复用本地项目目录、初始化 git，并把目录连接和推送到 GitHub。
+description: 适用于用户想根据一段项目描述启动新项目，并需要自动生成项目或仓库名称、在个人 GitHub 创建仓库、创建或复用本地项目目录、初始化 git，并完成远端关联与首次推送。
 ---
 
 # GitHub 项目初始化

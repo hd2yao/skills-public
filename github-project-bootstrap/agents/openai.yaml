@@ -1,4 +1,4 @@
 interface:
   display_name: "GitHub Project Bootstrap"
-  short_description: "Create and connect new GitHub project repos"
-  default_prompt: "Use $github-project-bootstrap to create a GitHub repository and connect a local project directory from this project description:"
+  short_description: "根据项目描述创建并连接新的 GitHub 项目仓库"
+  default_prompt: "使用 $github-project-bootstrap 根据这段项目描述创建 GitHub 仓库，并连接本地项目目录："

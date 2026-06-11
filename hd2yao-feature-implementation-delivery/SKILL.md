@@ -1,6 +1,6 @@
 ---
 name: hd2yao-feature-implementation-delivery
-description: Use when an approved feature plan is ready for implementation with parallel task execution, code review checkpoints, browser validation evidence, and final testing.
+description: 适用于功能计划已经评审通过，需要按任务推进实现，并配合并行执行、代码评审检查点、浏览器验证证据与最终测试完成交付。
 ---
 
 # HD2YAO Feature Implementation Delivery

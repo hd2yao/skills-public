@@ -1,4 +1,4 @@
 interface:
   display_name: "腾讯广告报表下载"
   short_description: "在真实 Chrome 中用本机脚本接管腾讯广告报表下载"
-  default_prompt: "Use $qq-ads-report-download to open a Tencent Ads report in real Google Chrome, hand off login to the user when needed, and continue the flow with local scripts only, not with Codex browser plugins or Computer Use."
+  default_prompt: "使用 $qq-ads-report-download 在真实 Google Chrome 中打开腾讯广告报表，必要时把登录交给用户，并仅通过本机脚本继续流程，不依赖特定 AI Agent 平台的浏览器插件、内置浏览器或桌面接管能力。"

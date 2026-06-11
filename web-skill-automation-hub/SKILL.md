@@ -113,6 +113,21 @@ node web-skill-automation-hub/scripts/run-orchestrator.js \
 
 dry-run 不启动浏览器，也不点击真实页面；真实执行必须接入浏览器 adapter，并继续遵守提交保护 gate。
 
+成功运行后可以从运行目录生成流程模板：
+
+```bash
+node web-skill-automation-hub/scripts/generate-template.js \
+  --run-dir web-skill-automation-hub/runs/<run-id> \
+  --templates-dir web-skill-automation-hub/templates
+```
+
+浏览器执行层通过 `adapters/` 中的统一接口接入。当前提供：
+
+- `playwright-adapter.js`：适合新流程和已有 Playwright 验证技能。
+- `puppeteer-adapter.js`：兼容 PRD 第一版建议和已有 JS/Puppeteer 技能。
+
+adapter 负责 `open/click/fill/screenshot/getText/getDomSnapshot/waitForLoad/saveLoginState/loadLoginState`，主编排器不直接绑定具体浏览器库。
+
 ## Skill Layering
 
 主编排不应该为每个新 URL 重新创建一整套登录、点击、提交、提取技能。第一版采用两层：

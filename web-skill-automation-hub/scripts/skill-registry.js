@@ -155,6 +155,27 @@ function parseList(lines, startIndex, indent) {
       continue;
     }
 
+    const inlineMap = rest.match(/^([^:]+):(.*)$/);
+    if (inlineMap) {
+      const item = {};
+      const key = inlineMap[1].trim();
+      const value = inlineMap[2].trim();
+      item[key] = value.length > 0 ? parseScalar(value) : {};
+      index += 1;
+
+      const next = lines[index];
+      if (next && next.indent > indent) {
+        const [child, nextIndex] = parseBlock(lines, index, next.indent);
+        if (child && typeof child === "object" && !Array.isArray(child)) {
+          Object.assign(item, child);
+        }
+        index = nextIndex;
+      }
+
+      result.push(item);
+      continue;
+    }
+
     result.push(parseScalar(rest));
     index += 1;
   }

@@ -53,6 +53,24 @@ operation:
     withBlock.operation.description,
     "登录后台后进入订单管理。\n读取今天的数据。",
   );
+
+  const withListObjects = parseYamlSubset(`
+steps:
+  - id: normalize
+    selected_skill: web-skill-automation-hub
+  - id: login
+    selected_skill: web-skill-generic-login
+`);
+  assert.deepEqual(withListObjects.steps, [
+    {
+      id: "normalize",
+      selected_skill: "web-skill-automation-hub",
+    },
+    {
+      id: "login",
+      selected_skill: "web-skill-generic-login",
+    },
+  ]);
 }
 
 function testRegistryValidation() {

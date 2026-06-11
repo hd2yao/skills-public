@@ -145,9 +145,12 @@ adapter 负责 `open/click/fill/screenshot/getText/getDomSnapshot/waitForLoad/sa
 |---|---|
 | challenge classification | `web-skill-challenge-router` if available |
 | slider puzzle challenge | `slider-captcha-browser-automation` |
+| arithmetic challenge | `arithmetic-captcha-browser-automation` |
+| manual takeover | `web-skill-manual-takeover` |
 | site-specific flow | 用户指定的 `reference_skill` |
 | generic login | `web-skill-generic-login` if available |
 | page operation and extraction | `web-skill-page-workflow` if available |
+| structured data extraction | `web-skill-data-extractor` if available |
 | submit confirmation | `web-skill-submit-guard` if available |
 | process child skill creation | `web-skill-flow-builder` if available |
 | template draft | `web-skill-template-draft` if available |

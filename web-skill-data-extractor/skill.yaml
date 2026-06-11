@@ -1,0 +1,29 @@
+name: web-skill-data-extractor
+display_name: 数据提取
+type: extract
+version: 0.1.0
+description: 从已进入目标页面的表格、列表、详情字段、搜索结果、链接或页面文本中提取结构化数据。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  source_url: string
+  data_type: string
+  columns: array
+  rows: array
+  output_format: array
+output_schema:
+  success: boolean
+  source_url: string
+  data_type: string
+  rows: array
+  files: array
+risk_level: low
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - extraction
+  - table
+  - csv
+  - json

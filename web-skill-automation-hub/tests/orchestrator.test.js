@@ -71,7 +71,7 @@ function testPlanGeneration() {
       expected_types: ["slider_puzzle"],
     },
     operation: {
-      description: "选择已开始任务，进入详情，点击结束制作后返回。",
+      description: "选择已开始任务，读取制作编号，进入详情，点击结束制作后返回。",
     },
     risk: {
       allow_submit: false,
@@ -83,12 +83,14 @@ function testPlanGeneration() {
       { name: "web-skill-challenge-router" },
       { name: "slider-captcha-browser-automation" },
       { name: "web-skill-page-workflow" },
+      { name: "web-skill-data-extractor" },
       { name: "web-skill-submit-guard" },
     ],
   });
 
   assert.ok(plan.steps.some((step) => step.id === "login"));
   assert.ok(plan.steps.some((step) => step.id === "slider-challenge"));
+  assert.ok(plan.steps.some((step) => step.id === "data-extraction"));
   assert.ok(plan.steps.some((step) => step.id === "submit-guard"));
 }
 

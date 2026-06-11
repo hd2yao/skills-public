@@ -1,0 +1,30 @@
+name: web-skill-manual-takeover
+display_name: 人工接管
+type: recovery
+version: 0.1.0
+description: 在 OTP、扫码、设备审批、未知验证或连续失败时暂停自动流程，并输出人工接管说明和恢复条件。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  run_id: string
+  source_step: string
+  reason: string
+  current_url: string
+  screenshot_path: string
+  resume_condition: string
+output_schema:
+  success: boolean
+  manual_takeover_required: boolean
+  reason: string
+  resume_condition: string
+  status: string
+risk_level: medium
+requires_human_approval: true
+supported_sites:
+  - "*"
+tags:
+  - recovery
+  - manual-takeover
+  - otp
+  - approval

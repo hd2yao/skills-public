@@ -68,6 +68,20 @@ function generatePlan(task, registry = { skills: [] }) {
     success_signal: "目标页面状态或提取结果符合任务要求。",
   }));
 
+  if (
+    task.task_type.includes("read_data") ||
+    task.task_type.includes("search_and_extract")
+  ) {
+    steps.push(step({
+      id: "data-extraction",
+      title: "Extract structured data",
+      selected_skill: choose(skillNames, "web-skill-data-extractor", "web-skill-page-workflow"),
+      purpose: "从表格、列表、详情字段或搜索结果中提取结构化数据。",
+      success_signal: "JSON、CSV 或 Markdown 结果文件已写入运行目录。",
+      risk_level: "low",
+    }));
+  }
+
   if (task.task_type.includes("submit_task")) {
     const submitStep = step({
       id: "submit-guard",

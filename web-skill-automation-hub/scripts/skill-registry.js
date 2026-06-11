@@ -75,6 +75,12 @@ function parseMap(lines, startIndex, indent) {
     const key = match[1].trim();
     const rest = match[2].trim();
     if (rest.length > 0) {
+      if (rest === "|" || rest === ">") {
+        const [blockScalar, nextIndex] = parseBlockScalar(lines, index + 1, indent, rest);
+        result[key] = blockScalar;
+        index = nextIndex;
+        continue;
+      }
       result[key] = parseScalar(rest);
       index += 1;
       continue;
@@ -93,6 +99,30 @@ function parseMap(lines, startIndex, indent) {
   }
 
   return [result, index];
+}
+
+function parseBlockScalar(lines, startIndex, parentIndent, style) {
+  const blockLines = [];
+  let index = startIndex;
+  let minIndent = null;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    if (line.indent <= parentIndent) {
+      break;
+    }
+    minIndent = minIndent === null ? line.indent : Math.min(minIndent, line.indent);
+    blockLines.push(line);
+    index += 1;
+  }
+
+  const normalized = blockLines.map((line) =>
+    line.raw.slice(minIndent === null ? 0 : minIndent),
+  );
+  if (style === ">") {
+    return [normalized.join(" ").trim(), index];
+  }
+  return [normalized.join("\n").trimEnd(), index];
 }
 
 function parseList(lines, startIndex, indent) {

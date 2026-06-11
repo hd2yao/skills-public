@@ -42,6 +42,17 @@ requires_human_approval: false
   assert.deepEqual(parsed.supported_sites, ["*"]);
   assert.deepEqual(parsed.tags, ["auth", "login"]);
   assert.equal(parsed.requires_human_approval, false);
+
+  const withBlock = parseYamlSubset(`
+operation:
+  description: |
+    登录后台后进入订单管理。
+    读取今天的数据。
+`);
+  assert.equal(
+    withBlock.operation.description,
+    "登录后台后进入订单管理。\n读取今天的数据。",
+  );
 }
 
 function testRegistryValidation() {

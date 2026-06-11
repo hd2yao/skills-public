@@ -1,0 +1,27 @@
+name: web-skill-flow-builder
+display_name: 流程子技能生成器
+type: flow
+version: 0.1.0
+description: 将具体网站、具体页面流程或成功运行记录沉淀成站点级或流程级子 Skill 草稿。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  target_url: string
+  workflow_name: string
+  user_goal: string
+  evidence: object
+  reuse_intent: boolean
+output_schema:
+  success: boolean
+  skill_slug: string
+  skill_path: string
+  needs_validation: boolean
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - flow
+  - skill-generation
+  - reuse

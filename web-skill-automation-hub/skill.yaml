@@ -1,0 +1,28 @@
+name: web-skill-automation-hub
+display_name: 网页自动化主编排器
+type: orchestrator
+version: 0.1.0
+description: 解析网页自动化任务并调度登录、验证、页面操作、提取、提交保护和模板沉淀子技能。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  url: string
+  task_description: string
+  credential: object
+  login_state: object
+  allow_submit: boolean
+output_schema:
+  success: boolean
+  run_id: string
+  used_skills: array
+  result_files: array
+  template_generated: boolean
+risk_level: high
+requires_human_approval: true
+supported_sites:
+  - "*"
+tags:
+  - orchestration
+  - browser-automation
+  - workflow

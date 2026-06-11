@@ -1,6 +1,6 @@
 ---
 name: hd2yao-feature-tech-plan-planmode
-description: Use when a feature discovery summary exists and a detailed implementation plan is needed in plan mode, including frontend design when UI is involved.
+description: 适用于已经有功能 discovery 摘要，需要在 plan mode 下产出可执行的详细技术方案，涉及界面时也包含前端设计细节。
 ---
 
 # HD2YAO Feature Tech Plan (Plan Mode)

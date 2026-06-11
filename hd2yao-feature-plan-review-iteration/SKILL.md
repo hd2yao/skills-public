@@ -1,6 +1,6 @@
 ---
 name: hd2yao-feature-plan-review-iteration
-description: Use when a feature plan needs review feedback incorporated through versioned document updates until blocking comments are resolved.
+description: 适用于功能计划需要根据评审反馈持续迭代，并通过版本化文档追踪修改过程，直到阻断问题被清零。
 ---
 
 # HD2YAO Feature Plan Review Iteration
@@ -23,10 +23,10 @@ Do not finish this skill with chat-only feedback. You MUST persist review result
    - Simple path: small/easy change, limited blast radius.
    - Complex path: larger change, multi-module risk, or unclear feasibility.
 4. For Simple path:
-   - Review directly in Codex (no Claude round-trip file required).
+   - Review directly in the current agent session (no external Claude round-trip file required).
    - Classify findings as Blocking, Important, or Minor.
    - Update plan only if needed; if updated, write `./<plan-dir>/<feature>.plan.vN+1.md`.
-   - Write summary to `./<plan-dir>/reviews/simple-review.codex.md`.
+   - Write summary to `./<plan-dir>/reviews/simple-review.agent.md`.
    - Verify persistence and, if gate passes, directly prompt user to execute `hd2yao-feature-implementation-delivery`.
 5. For Complex path:
    - Set current review round index `N`.
@@ -37,7 +37,7 @@ Do not finish this skill with chat-only feedback. You MUST persist review result
    - If neither file nor raw Claude review text is available, stop and ask user to provide one of them.
    - Classify Claude findings as Blocking, Important, or Minor.
    - Update the plan and write next version: `./<plan-dir>/<feature>.plan.vN+1.md`.
-   - Write resolution mapping file: `./<plan-dir>/reviews/round-0N.codex-resolution.md`.
+   - Write resolution mapping file: `./<plan-dir>/reviews/round-0N.agent-resolution.md`.
    - Verify persistence for all round artifacts and next plan version.
    - Report saved paths and repeat until no blocking comments remain.
 
@@ -58,12 +58,12 @@ Primary output:
 - If plan unchanged: reuse latest plan path and record decision in review output.
 
 Simple path artifact (required):
-- `./<plan-dir>/reviews/simple-review.codex.md`
+- `./<plan-dir>/reviews/simple-review.agent.md`
 
 Complex path artifacts (required only for complex path):
 - `./<plan-dir>/reviews/round-0N.claude-review-request.md`
 - `./<plan-dir>/reviews/round-0N.claude.md`
-- `./<plan-dir>/reviews/round-0N.codex-resolution.md`
+- `./<plan-dir>/reviews/round-0N.agent-resolution.md`
 
 Include this section:
 
@@ -125,8 +125,8 @@ Final response must be short:
 ## Mandatory Persistence Rule
 
 - Every iteration must persist review results to disk.
-- Simple path must create `simple-review.codex.md`.
-- Complex path must create the request file, Claude output file, Codex resolution file, and next plan version.
+- Simple path must create `simple-review.agent.md`.
+- Complex path must create the request file, Claude output file, agent resolution file, and next plan version.
 - For Complex path, Claude review text is not valid until it is present in `round-0N.claude.md`.
 - Chat-only review summaries do not satisfy this skill's output requirement.
 - If file write or verification fails, report the blocker and stop. Do not hand off.
@@ -136,8 +136,8 @@ Final response must be short:
 Implementation can start only when:
 - Blocking comments count is 0.
 - Important comments are resolved or explicitly deferred.
-- Decisions are documented in a review log (inside updated plan or `simple-review.codex.md`).
-- For Simple path: `simple-review.codex.md` exists and plan path is reported.
+- Decisions are documented in a review log (inside updated plan or `simple-review.agent.md`).
+- For Simple path: `simple-review.agent.md` exists and plan path is reported.
 - For Complex path: latest Claude review exists and round artifacts are complete under `./<plan-dir>/reviews/`.
 
 ## Single-Use Mode

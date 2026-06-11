@@ -1,6 +1,6 @@
 ---
 name: slider-captcha-browser-automation
-description: Use when browser automation is blocked by a slider or jigsaw captcha during login or form submission, especially when the page exposes captcha create and verify requests or returns puzzle images as base64 or canvas-backed assets.
+description: 适用于浏览器自动化在登录或提交表单时被滑块或拼图验证码阻塞，尤其是页面暴露验证码创建、校验请求，或返回 base64、canvas 形式的拼图资源时。
 ---
 
 # Slider Captcha Browser Automation

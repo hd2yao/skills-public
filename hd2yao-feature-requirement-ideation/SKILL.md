@@ -1,6 +1,6 @@
 ---
 name: hd2yao-feature-requirement-ideation
-description: Use when starting a new feature and requirements are ambiguous; clarifies goals, scope, constraints, and acceptance criteria before writing plans or code.
+description: 适用于新功能刚开始、需求仍不清晰时，需要在写计划或代码前先澄清目标、范围、约束与验收标准。
 ---
 
 # HD2YAO Feature Requirement Ideation

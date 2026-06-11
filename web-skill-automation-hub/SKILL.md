@@ -128,6 +128,23 @@ node web-skill-automation-hub/scripts/generate-template.js \
 
 adapter 负责 `open/click/fill/screenshot/getText/getDomSnapshot/waitForLoad/saveLoginState/loadLoginState`，主编排器不直接绑定具体浏览器库。
 
+## Local Service
+
+V1.0 本地服务原型：
+
+```bash
+node web-skill-automation-hub/server/local-server.js --port 8787
+```
+
+服务提供：
+
+- `GET /api/skills`：返回 skill registry。
+- `POST /api/tasks/dry-run`：创建 dry-run 任务并写入运行记录。
+- `GET /api/runs`：列出运行记录。
+- `GET /api/runs/<run-id>`：读取单次运行详情。
+- `POST /api/templates`：从运行记录生成流程模板。
+- `GET /`：打开轻量任务创建和运行记录页面。
+
 ## Skill Layering
 
 主编排不应该为每个新 URL 重新创建一整套登录、点击、提交、提取技能。第一版采用两层：

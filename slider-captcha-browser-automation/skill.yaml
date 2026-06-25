@@ -1,0 +1,29 @@
+name: slider-captcha-browser-automation
+display_name: 滑块拼图验证
+type: challenge
+version: 0.2.0
+description: 处理用户授权网页登录或提交过程中的滑块拼图验证，并以后端校验响应作为成功信号。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  login_url: string
+  create_pattern: string
+  verify_pattern: string
+  handle_selector: string
+  max_retry: number
+output_schema:
+  success: boolean
+  challenge_type: string
+  retry_count: number
+  verify_code: string
+  screenshot_path: string
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - challenge
+  - captcha
+  - slider
+  - playwright

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.web-skill-automation-hub/schemas/skill.schema.json",
+  "title": "Web Skill Metadata",
+  "type": "object",
+  "required": [
+    "name",
+    "display_name",
+    "type",
+    "version",
+    "description",
+    "entry",
+    "input_schema",
+    "output_schema",
+    "risk_level",
+    "requires_human_approval",
+    "supported_sites",
+    "tags"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "orchestrator",
+        "auth",
+        "challenge",
+        "operation",
+        "extract",
+        "submit",
+        "template",
+        "recovery",
+        "flow"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "entry": {
+      "type": "object",
+      "required": ["type", "path"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["markdown", "js"]
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "input_schema": {
+      "type": "object"
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "requires_human_approval": {
+      "type": "boolean"
+    },
+    "supported_sites": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

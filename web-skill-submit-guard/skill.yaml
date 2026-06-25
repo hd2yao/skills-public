@@ -1,0 +1,27 @@
+name: web-skill-submit-guard
+display_name: 提交保护
+type: submit
+version: 0.1.0
+description: 在提交、发布、删除、接受任务、支付或批量修改等高风险页面动作前强制展示摘要和截图并等待明确确认。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  action: string
+  target: string
+  page_url: string
+  summary: object
+  before_screenshot: string
+output_schema:
+  approved: boolean
+  executed: boolean
+  after_screenshot: string
+  result: object
+risk_level: high
+requires_human_approval: true
+supported_sites:
+  - "*"
+tags:
+  - submit
+  - confirmation
+  - safety

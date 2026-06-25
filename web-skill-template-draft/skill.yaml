@@ -1,0 +1,26 @@
+name: web-skill-template-draft
+display_name: 流程模板草稿
+type: template
+version: 0.1.0
+description: 根据运行记录、步骤日志、截图和结果生成不含敏感信息的 flow.yaml 或模板草稿。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  run_id: string
+  task_name: string
+  run_dir: string
+  source_url: string
+  target_slug: string
+output_schema:
+  success: boolean
+  template_path: string
+  sanitized: boolean
+risk_level: low
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - template
+  - flow
+  - draft

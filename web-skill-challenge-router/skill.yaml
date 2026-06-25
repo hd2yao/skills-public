@@ -1,0 +1,27 @@
+name: web-skill-challenge-router
+display_name: 验证类型路由
+type: challenge
+version: 0.1.0
+description: 检测网页自动化中的验证码、滑块、扫码、OTP 或外部审批，并选择自动验证技能或人工接管。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  current_url: string
+  source_step: string
+  page_text: string
+  dom_summary: object
+  network_evidence: object
+output_schema:
+  success: boolean
+  challenge_type: string
+  routed_skill: string
+  manual_takeover_required: boolean
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - challenge
+  - captcha
+  - routing

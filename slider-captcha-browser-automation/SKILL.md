@@ -78,10 +78,10 @@ Do not use this skill when:
 
 ## Playwright Pattern
 
-Use this sequence in order:
+Use this sequence in order. Prefer `solveSliderWithRetries` for sites that recreate the captcha after a failed verify response:
 
 ```js
-const { attachSliderCapture, solveSliderFromResponse, dragSliderHandle } =
+const { attachSliderCapture, solveSliderWithRetries } =
   require("./scripts/playwright-slider-solver");
 
 let sliderState = attachSliderCapture(page, {
@@ -93,16 +93,13 @@ await page.goto(loginUrl, { waitUntil: "networkidle" });
 await page.getByPlaceholder("邮箱").fill(username);
 await page.getByPlaceholder("密码").fill(password);
 
-const solved = await solveSliderFromResponse(page, sliderState.latestCreate.data);
-
-await dragSliderHandle(page, {
-  handleSelector: ".slider",
-  distance: solved.dragDistance,
+const result = await solveSliderWithRetries(page, sliderState, {
+  handleSelector: ".loginMain .slider",
+  compensationCandidates: [0, 25, -5],
+  maxAttempts: 3,
 });
 
-await page.waitForTimeout(1200);
-
-if (!sliderState.latestVerify || sliderState.latestVerify.code !== "000000") {
+if (!result.success) {
   throw new Error("Slider verification failed");
 }
 ```
@@ -115,7 +112,7 @@ For a new site, adapt only these variables first:
 - create endpoint pattern
 - verify endpoint pattern
 - response field names for the images
-- drag compensation offset if the site measures center vs left edge differently
+- drag compensation candidates if the site measures center vs left edge differently
 
 Do not rewrite the whole workflow before checking whether the site already matches the generic helper assumptions.
 
@@ -132,6 +129,8 @@ Some sites recreate the captcha or reject the action if login is submitted too e
 ### Using the first computed offset without compensation
 
 The raw image match often identifies the left edge of the target gap. Some sites expect the handle center or another shifted coordinate. Tune a small compensation term before rewriting the matcher.
+
+For repeated automation, do not rely on a single fixed compensation. Use a short ordered candidate list such as `[0, 25, -5]` and verify each attempt from the backend response. Stop after the configured attempt limit and hand off instead of looping indefinitely.
 
 ### Treating every failure as an image-matching problem
 

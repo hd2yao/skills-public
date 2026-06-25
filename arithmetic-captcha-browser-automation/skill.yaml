@@ -1,0 +1,28 @@
+name: arithmetic-captcha-browser-automation
+display_name: 算术验证码处理
+type: challenge
+version: 0.1.0
+description: 处理用户授权网页登录或提交流程中的 100 以内加减法验证码，前提是算式文本已经可读取。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  challenge_type: string
+  captcha_text: string
+  answer_selector: string
+  submit_selector: string
+  max_retry: number
+output_schema:
+  success: boolean
+  challenge_type: string
+  answer: string
+  retry_count: number
+  screenshot_path: string
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - challenge
+  - captcha
+  - arithmetic

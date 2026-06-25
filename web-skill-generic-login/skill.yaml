@@ -1,0 +1,28 @@
+name: web-skill-generic-login
+display_name: 通用网页登录
+type: auth
+version: 0.1.0
+description: 使用用户授权的账号密码或登录态完成常规网页登录，并在出现验证或外部授权时返回状态。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  url: string
+  username: string
+  password: string
+  login_state: object
+  site_profile: string
+output_schema:
+  success: boolean
+  current_url: string
+  login_state_path: string
+  challenge_detected: boolean
+  challenge_type: string
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - auth
+  - login
+  - profile

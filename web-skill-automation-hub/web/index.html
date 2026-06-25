@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web Skill Automation Hub</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Web Skill Automation Hub</h1>
+        <p>创建网页自动化任务，生成计划，查看运行记录和技能注册表。</p>
+      </div>
+      <button id="refreshSkills" type="button">刷新技能</button>
+    </header>
+
+    <main class="layout">
+      <section class="panel task-panel">
+        <h2>任务创建</h2>
+        <label>
+          任务名称
+          <input id="taskName" value="读取后台订单">
+        </label>
+        <label>
+          目标 URL
+          <input id="taskUrl" value="https://example.com/admin">
+        </label>
+        <label>
+          操作说明
+          <textarea id="taskDescription" rows="7">登录后台后，进入订单列表，筛选今天的数据，读取订单号、手机号、金额。</textarea>
+        </label>
+        <div class="switch-row">
+          <label><input id="allowSubmit" type="checkbox"> 允许提交类动作</label>
+          <label><input id="saveTemplate" type="checkbox" checked> 成功后保存模板</label>
+        </div>
+        <button id="dryRun" type="button">生成执行计划</button>
+      </section>
+
+      <section class="panel">
+        <h2>运行结果</h2>
+        <pre id="resultOutput" class="output">等待任务...</pre>
+      </section>
+
+      <section class="panel">
+        <h2>技能注册表</h2>
+        <div id="skillsList" class="list"></div>
+      </section>
+
+      <section class="panel">
+        <h2>历史运行</h2>
+        <button id="refreshRuns" type="button">刷新运行记录</button>
+        <div id="runsList" class="list"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

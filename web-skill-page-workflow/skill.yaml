@@ -1,0 +1,27 @@
+name: web-skill-page-workflow
+display_name: 页面操作与读取
+type: operation
+version: 0.1.0
+description: 登录和验证完成后执行低风险页面导航、点击、输入、筛选、翻页、表格读取和可见数据提取。
+entry:
+  type: markdown
+  path: SKILL.md
+input_schema:
+  current_url: string
+  task_description: string
+  steps: array
+  output_format: array
+output_schema:
+  success: boolean
+  extracted_data: object
+  screenshots: array
+  blocked_by_submit_guard: boolean
+risk_level: medium
+requires_human_approval: false
+supported_sites:
+  - "*"
+tags:
+  - operation
+  - extraction
+  - table
+  - navigation

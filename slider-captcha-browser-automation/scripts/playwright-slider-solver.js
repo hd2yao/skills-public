@@ -157,6 +157,79 @@ async function solveSliderFromResponse(page, captchaData, options = {}) {
   };
 }
 
+async function solveSliderWithRetries(page, sliderState, options = {}) {
+  const {
+    handleSelector,
+    maxAttempts = 3,
+    compensationCandidates = [0, 25, -5],
+    createWaitTimeoutMs = 5000,
+    verifyWaitTimeoutMs = 3500,
+    successPredicate = defaultVerifySuccess,
+    dragOptions = {},
+    solveOptions = {},
+  } = options;
+
+  if (!handleSelector) {
+    throw new Error("handleSelector is required");
+  }
+
+  const attempts = [];
+  let lastCreate = null;
+
+  for (let index = 0; index < maxAttempts; index += 1) {
+    const compensation = compensationCandidates[
+      Math.min(index, compensationCandidates.length - 1)
+    ];
+    const create = await waitForLatestCreate(sliderState, {
+      previousCreate: lastCreate,
+      timeoutMs: createWaitTimeoutMs,
+    });
+    lastCreate = create;
+
+    const solved = await solveSliderFromResponse(page, create.data, {
+      ...solveOptions,
+      compensation,
+    });
+    const verifyCountBefore = countVerifyEvents(sliderState);
+
+    await dragSliderHandle(page, {
+      handleSelector,
+      distance: solved.dragDistance,
+      ...dragOptions,
+    });
+
+    const verify = await waitForVerify(sliderState, {
+      verifyCountBefore,
+      timeoutMs: verifyWaitTimeoutMs,
+    });
+    const success = successPredicate(verify);
+    const attempt = {
+      attempt: index + 1,
+      compensation,
+      bestX: solved.bestX,
+      dragDistance: solved.dragDistance,
+      verify,
+      success,
+    };
+    attempts.push(attempt);
+
+    if (success) {
+      return {
+        success: true,
+        attempts,
+        solved,
+        verify,
+      };
+    }
+  }
+
+  return {
+    success: false,
+    attempts,
+    verify: sliderState.latestVerify,
+  };
+}
+
 async function dragSliderHandle(page, options = {}) {
   const {
     handleSelector,
@@ -200,6 +273,57 @@ async function dragSliderHandle(page, options = {}) {
   await page.mouse.up();
 }
 
+async function waitForLatestCreate(sliderState, options = {}) {
+  const {
+    previousCreate = null,
+    timeoutMs = 5000,
+    intervalMs = 100,
+  } = options;
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt <= timeoutMs) {
+    if (sliderState.latestCreate && sliderState.latestCreate !== previousCreate) {
+      return sliderState.latestCreate;
+    }
+    await wait(intervalMs);
+  }
+
+  throw new Error("Timed out waiting for captcha create response");
+}
+
+async function waitForVerify(sliderState, options = {}) {
+  const {
+    verifyCountBefore = 0,
+    timeoutMs = 3500,
+    intervalMs = 100,
+  } = options;
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt <= timeoutMs) {
+    if (countVerifyEvents(sliderState) > verifyCountBefore) {
+      return sliderState.latestVerify;
+    }
+    await wait(intervalMs);
+  }
+
+  throw new Error("Timed out waiting for captcha verify response");
+}
+
+function countVerifyEvents(sliderState) {
+  return sliderState.history.filter((event) => event.type === "verify").length;
+}
+
+function defaultVerifySuccess(payload) {
+  if (!payload) {
+    return false;
+  }
+  return payload.code === "000000" || payload.data === true;
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function randomInt(min, max) {
   const low = Math.ceil(min);
   const high = Math.floor(max);
@@ -211,4 +335,5 @@ module.exports = {
   dragSliderHandle,
   extractDefaultImages,
   solveSliderFromResponse,
+  solveSliderWithRetries,
 };

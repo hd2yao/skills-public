@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目阶段交接模板"
+  short_description: "生成包含阶段目标、证据、风险和下一步验收标准的交接文档"
+  default_prompt: "根据当前项目状态生成阶段交接文档。"

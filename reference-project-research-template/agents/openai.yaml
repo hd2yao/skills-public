@@ -1,0 +1,4 @@
+interface:
+  display_name: "参考项目调研模板"
+  short_description: "生成包含参考项目、当前映射、差距和路线图的调研文档"
+  default_prompt: "根据参考项目和当前项目生成调研对照文档。"

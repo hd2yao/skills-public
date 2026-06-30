@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目状态审计"
+  short_description: "审计项目当前进度、证据来源、风险缺口和后续任务安排"
+  default_prompt: "审计当前项目状态，并输出进度、证据、风险和下一步建议。"
